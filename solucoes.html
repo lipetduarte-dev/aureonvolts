@@ -1,0 +1,2122 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>Sistema em Desenvolvimento — Aureon Volts</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Exo+2:wght@300;400;500;600;700&family=Share+Tech+Mono&display=swap');
+
+    :root {
+      --electric: #00CFFF;
+      --navy: #050D1A;
+      --navy2: #0A1829;
+      --navy3: #0F2240;
+      --green: #00FF99;
+      --gold: #F0A500;
+      --red: #FF4D6A;
+      --white: #fff;
+      --gray: #8FA8C8;
+      --glow-e: 0 0 12px rgba(0, 207, 255, 0.7), 0 0 40px rgba(0, 207, 255, 0.3);
+      --glow-g: 0 0 12px rgba(0, 255, 153, 0.7), 0 0 40px rgba(0, 255, 153, 0.3);
+      --glow-r: 0 0 12px rgba(255, 77, 106, 0.8), 0 0 40px rgba(255, 77, 106, 0.35);
+    }
+
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html,
+    body {
+      width: 100%;
+      height: 100%;
+      overflow-x: hidden;
+    }
+
+    body {
+      font-family: 'Exo 2', sans-serif;
+      background: var(--navy);
+      color: var(--white);
+    }
+
+    /* ── BG CANVAS ── */
+    #bgCanvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 200;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 5%;
+      height: 64px;
+      background: rgba(5, 13, 26, 0.9);
+      backdrop-filter: blur(14px);
+      border-bottom: 1px solid rgba(0, 207, 255, 0.15);
+    }
+
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+    }
+
+    .nav-logo img {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      object-fit: cover;
+
+      border: 1px solid rgba(0, 207, 255, 0.35);
+
+      box-shadow:
+        0 0 10px rgba(0, 207, 255, 0.6),
+        0 0 25px rgba(0, 207, 255, 0.3),
+        0 0 45px rgba(0, 207, 255, 0.15);
+
+      transition: all 0.3s ease;
+    }
+
+    .nav-logo img:hover {
+      transform: scale(1.08);
+      box-shadow:
+        0 0 15px rgba(0, 207, 255, 0.9),
+        0 0 35px rgba(0, 207, 255, 0.5),
+        0 0 70px rgba(0, 207, 255, 0.25);
+    }
+
+    .nav-brand {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 1.3rem;
+      font-weight: 700;
+      letter-spacing: 3px;
+      background: linear-gradient(135deg, #fff 40%, var(--gold));
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-transform: uppercase;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 32px;
+      list-style: none;
+    }
+
+    .nav-links a {
+      color: var(--gray);
+      text-decoration: none;
+      font-size: 0.8rem;
+      font-weight: 500;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      transition: color 0.3s;
+      position: relative;
+    }
+
+    .nav-links a::after {
+      content: '';
+      position: absolute;
+      bottom: -4px;
+      left: 0;
+      right: 100%;
+      height: 1px;
+      background: var(--electric);
+      transition: right 0.3s;
+    }
+
+    .nav-links a:hover {
+      color: var(--electric);
+    }
+
+    .nav-links a:hover::after {
+      right: 0;
+      box-shadow: var(--glow-e);
+    }
+
+    .nav-hbg {
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+      cursor: pointer;
+    }
+
+    .nav-hbg span {
+      display: block;
+      width: 22px;
+      height: 2px;
+      background: var(--electric);
+      transition: all 0.3s;
+    }
+
+    /* ── HERO ── */
+    #hero {
+      position: relative;
+      z-index: 1;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 80px 5% 40px;
+      text-align: center;
+      flex-direction: column;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.65rem;
+      letter-spacing: 4px;
+      color: var(--electric);
+      border: 1px solid rgba(0, 207, 255, 0.3);
+      padding: 6px 16px;
+      margin-bottom: 28px;
+      animation: badge-pulse 3s ease-in-out infinite;
+    }
+
+    .badge-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--green);
+      animation: blink 1.5s infinite;
+    }
+
+    @keyframes badge-pulse {
+
+      0%,
+      100% {
+        box-shadow: 0 0 0 rgba(0, 207, 255, 0);
+      }
+
+      50% {
+        box-shadow: 0 0 20px rgba(0, 207, 255, 0.3);
+      }
+    }
+
+    @keyframes blink {
+
+      0%,
+      100% {
+        opacity: 1;
+      }
+
+      50% {
+        opacity: 0.2;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .nav-logo img {
+        width: 38px;
+        height: 38px;
+      }
+    }
+
+    .hero-title {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: clamp(2.6rem, 6vw, 5.5rem);
+      font-weight: 700;
+      line-height: 1.05;
+      margin-bottom: 20px;
+    }
+
+    .hero-title .t-electric {
+      color: var(--electric);
+      text-shadow: 0 0 30px rgba(0, 207, 255, 0.4);
+    }
+
+    .hero-title .t-gold {
+      color: var(--gold);
+    }
+
+    .hero-title .glitch {
+      position: relative;
+      display: inline-block;
+    }
+
+    .hero-title .glitch::before,
+    .hero-title .glitch::after {
+      content: attr(data-text);
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+    }
+
+    .hero-title .glitch::before {
+      color: var(--electric);
+      clip: rect(24px, 550px, 90px, 0);
+      animation: glitch1 4s infinite;
+    }
+
+    .hero-title .glitch::after {
+      color: var(--red);
+      clip: rect(85px, 550px, 140px, 0);
+      animation: glitch2 4s infinite;
+    }
+
+    @keyframes glitch1 {
+
+      0%,
+      94% {
+        clip: rect(0, 0, 0, 0);
+        transform: none;
+        opacity: 0;
+      }
+
+      95% {
+        clip: rect(20px, 900px, 50px, 0);
+        transform: translate(-2px);
+        opacity: 0.8;
+      }
+
+      96% {
+        clip: rect(60px, 900px, 90px, 0);
+        transform: translate(2px);
+        opacity: 0.8;
+      }
+
+      97% {
+        clip: rect(30px, 900px, 70px, 0);
+        transform: translate(-1px);
+        opacity: 0.6;
+      }
+
+      100% {
+        clip: rect(0, 0, 0, 0);
+        opacity: 0;
+      }
+    }
+
+    @keyframes glitch2 {
+
+      0%,
+      96% {
+        clip: rect(0, 0, 0, 0);
+        transform: none;
+        opacity: 0;
+      }
+
+      97% {
+        clip: rect(50px, 900px, 80px, 0);
+        transform: translate(2px);
+        opacity: 0.7;
+      }
+
+      98% {
+        clip: rect(10px, 900px, 40px, 0);
+        transform: translate(-2px);
+        opacity: 0.7;
+      }
+
+      100% {
+        clip: rect(0, 0, 0, 0);
+        opacity: 0;
+      }
+    }
+
+    .hero-sub {
+      font-size: clamp(0.9rem, 2vw, 1.1rem);
+      color: var(--gray);
+      line-height: 1.8;
+      max-width: 640px;
+      margin: 0 auto 16px;
+    }
+
+    .hero-desc {
+      font-size: 0.82rem;
+      color: rgba(143, 168, 200, 0.6);
+      line-height: 1.8;
+      max-width: 520px;
+      margin: 0 auto 48px;
+    }
+
+    .footer-logo {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      object-fit: cover;
+
+      box-shadow:
+        0 0 12px rgba(0, 207, 255, 0.5),
+        0 0 30px rgba(0, 207, 255, 0.2);
+    }
+
+    /* ── DASHBOARD PANEL ── */
+    .dashboard {
+      background: rgba(10, 24, 41, 0.7);
+      border: 1px solid rgba(0, 207, 255, 0.18);
+      padding: 28px 32px;
+      max-width: 680px;
+      width: 100%;
+      margin: 0 auto 48px;
+      position: relative;
+      clip-path: polygon(0 0, calc(100% - 20px) 0, 100% 20px, 100% 100%, 20px 100%, 0 calc(100% - 20px));
+    }
+
+    .dashboard::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--electric), var(--gold), transparent);
+    }
+
+    .dash-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 22px;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.65rem;
+      letter-spacing: 3px;
+      color: var(--gray);
+    }
+
+    .dash-status {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--gold);
+    }
+
+    .dash-status-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--gold);
+      animation: blink 2s infinite;
+    }
+
+    .progress-label {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.6rem;
+      letter-spacing: 2px;
+      color: var(--gray);
+      margin-bottom: 8px;
+    }
+
+    .progress-track {
+      width: 100%;
+      height: 8px;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 1px;
+      overflow: hidden;
+      margin-bottom: 22px;
+      position: relative;
+    }
+
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--electric), var(--green));
+      border-radius: 1px;
+      transition: width 0.4s ease;
+      box-shadow: 0 0 8px rgba(0, 207, 255, 0.5);
+    }
+
+    .progress-scan {
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 30px;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4));
+      animation: scan 2s linear infinite;
+    }
+
+    @keyframes scan {
+      0% {
+        right: 100%;
+      }
+
+      100% {
+        right: -30px;
+      }
+    }
+
+    .dash-metrics {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+    }
+
+    .metric {
+      background: rgba(0, 207, 255, 0.04);
+      border: 1px solid rgba(0, 207, 255, 0.1);
+      padding: 14px 12px;
+      text-align: center;
+      transition: border-color 0.3s;
+    }
+
+    .metric:hover {
+      border-color: rgba(0, 207, 255, 0.3);
+    }
+
+    .metric-lbl {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.56rem;
+      letter-spacing: 2px;
+      color: var(--gray);
+      margin-bottom: 6px;
+      text-transform: uppercase;
+    }
+
+    .metric-val {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: var(--electric);
+    }
+
+    .metric-val.gv {
+      color: var(--green);
+    }
+
+    .metric-val.ov {
+      color: var(--gold);
+    }
+
+    .hero-btns {
+      display: flex;
+      gap: 14px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-bottom: 32px;
+    }
+
+    .btn-p {
+      padding: 13px 28px;
+      background: linear-gradient(135deg, var(--electric), var(--electric-dim, #0099CC));
+      color: var(--navy);
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 0.85rem;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      border: none;
+      cursor: pointer;
+      clip-path: polygon(10px 0%, 100% 0%, calc(100% - 10px) 100%, 0% 100%);
+      transition: all 0.3s;
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    .btn-p:hover {
+      box-shadow: var(--glow-e);
+      transform: translateY(-2px);
+    }
+
+    .btn-s {
+      padding: 12px 28px;
+      background: transparent;
+      color: var(--gold);
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 0.85rem;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      cursor: pointer;
+      border: 1px solid var(--gold);
+      clip-path: polygon(10px 0%, 100% 0%, calc(100% - 10px) 100%, 0% 100%);
+      transition: all 0.3s;
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    .btn-s:hover {
+      background: rgba(240, 165, 0, 0.1);
+      box-shadow: var(--glow-g);
+      transform: translateY(-2px);
+    }
+
+    /* ── GAME SECTION ── */
+    #game-section {
+      position: relative;
+      z-index: 1;
+      padding: 80px 5% 60px;
+      background: linear-gradient(180deg, var(--navy) 0%, #030810 100%);
+    }
+
+    .section-label {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.68rem;
+      letter-spacing: 4px;
+      color: var(--electric);
+      text-transform: uppercase;
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .section-label::before,
+    .section-label::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(90deg, var(--electric), transparent);
+    }
+
+    .section-label::after {
+      background: linear-gradient(90deg, transparent, var(--electric));
+    }
+
+    .section-title {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: clamp(1.6rem, 3vw, 2.6rem);
+      font-weight: 700;
+      text-align: center;
+      margin-bottom: 8px;
+    }
+
+    .section-title span {
+      color: var(--electric);
+    }
+
+    .section-sub {
+      text-align: center;
+      color: var(--gray);
+      font-size: 0.85rem;
+      margin-bottom: 40px;
+    }
+
+    /* GAME CONTROLS INFO */
+    .game-controls-info {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 20px;
+      flex-wrap: wrap;
+      margin-bottom: 24px;
+    }
+
+    .ctrl-chip {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.6rem;
+      letter-spacing: 2px;
+      color: var(--gray);
+      background: rgba(0, 207, 255, 0.05);
+      border: 1px solid rgba(0, 207, 255, 0.12);
+      padding: 6px 14px;
+    }
+
+    .ctrl-key {
+      background: rgba(0, 207, 255, 0.1);
+      border: 1px solid rgba(0, 207, 255, 0.3);
+      padding: 2px 8px;
+      color: var(--electric);
+      font-size: 0.65rem;
+    }
+
+    /* GAME CONTAINER */
+    .game-wrapper {
+      max-width: 900px;
+      margin: 0 auto;
+      background: rgba(3, 8, 16, 0.95);
+      border: 1px solid rgba(0, 207, 255, 0.2);
+      position: relative;
+      overflow: hidden;
+      clip-path: polygon(0 0, calc(100% - 24px) 0, 100% 24px, 100% 100%, 24px 100%, 0 calc(100% - 24px));
+    }
+
+    .game-wrapper::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, transparent, var(--electric), var(--green), var(--electric), transparent);
+      animation: topline 3s linear infinite;
+    }
+
+    @keyframes topline {
+      0% {
+        opacity: 1;
+      }
+
+      50% {
+        opacity: 0.5;
+      }
+
+      100% {
+        opacity: 1;
+      }
+    }
+
+    /* Game HUD */
+    .game-hud {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 20px;
+      background: rgba(0, 0, 0, 0.4);
+      border-bottom: 1px solid rgba(0, 207, 255, 0.1);
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.65rem;
+    }
+
+    .hud-score {
+      color: var(--electric);
+      letter-spacing: 3px;
+    }
+
+    .hud-best {
+      color: var(--gold);
+      letter-spacing: 3px;
+    }
+
+    .hud-level {
+      color: var(--green);
+      letter-spacing: 3px;
+    }
+
+    /* Game Canvas */
+    #gameCanvas {
+      display: block;
+      width: 100%;
+      height: 220px;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    /* DIAG OVERLAY */
+    .diag-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(3, 8, 16, 0.95);
+      z-index: 10;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+
+    .diag-title {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: var(--electric);
+      letter-spacing: 3px;
+      margin-bottom: 18px;
+      text-align: center;
+    }
+
+    .diag-lines {
+      width: 100%;
+      max-width: 400px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-bottom: 24px;
+    }
+
+    .diag-line {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.6rem;
+      letter-spacing: 2px;
+      color: var(--gray);
+    }
+
+    .diag-bar-track {
+      flex: 1;
+      height: 3px;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 1px;
+      overflow: hidden;
+    }
+
+    .diag-bar-fill {
+      height: 100%;
+      width: 0%;
+      background: var(--electric);
+      border-radius: 1px;
+      transition: width 0.4s ease;
+    }
+
+    .diag-bar-fill.gold {
+      background: var(--gold);
+    }
+
+    .diag-bar-fill.green {
+      background: var(--green);
+    }
+
+    .diag-start-btn {
+      padding: 14px 36px;
+      background: linear-gradient(135deg, var(--electric), #0099CC);
+      color: var(--navy);
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 1rem;
+      font-weight: 700;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      border: none;
+      cursor: pointer;
+      clip-path: polygon(12px 0%, 100% 0%, calc(100% - 12px) 100%, 0% 100%);
+      transition: all 0.3s;
+      animation: pulse-btn 2s ease-in-out infinite;
+    }
+
+    .diag-start-btn:hover {
+      box-shadow: var(--glow-e);
+      transform: scale(1.04);
+      animation: none;
+    }
+
+    @keyframes pulse-btn {
+
+      0%,
+      100% {
+        box-shadow: none;
+      }
+
+      50% {
+        box-shadow: var(--glow-e);
+      }
+    }
+
+    /* GAME OVER OVERLAY */
+    .gameover-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(3, 8, 16, 0.96);
+      z-index: 10;
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+
+    .gameover-overlay.show {
+      display: flex;
+    }
+
+    .go-glitch {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: var(--red);
+      letter-spacing: 4px;
+      text-align: center;
+      margin-bottom: 8px;
+      animation: go-glitch 0.3s steps(2) infinite;
+    }
+
+    @keyframes go-glitch {
+      0% {
+        clip-path: polygon(0 0, 100% 0, 100% 33%, 0 33%);
+        transform: translate(-2px);
+      }
+
+      33% {
+        clip-path: polygon(0 33%, 100% 33%, 100% 66%, 0 66%);
+        transform: translate(2px);
+      }
+
+      66% {
+        clip-path: polygon(0 66%, 100% 66%, 100% 100%, 0 100%);
+        transform: none;
+      }
+    }
+
+    .go-sub {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.65rem;
+      color: var(--gray);
+      letter-spacing: 3px;
+      margin-bottom: 20px;
+    }
+
+    .go-scores {
+      display: flex;
+      gap: 32px;
+      margin-bottom: 24px;
+    }
+
+    .go-score-item {
+      text-align: center;
+    }
+
+    .go-score-val {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: var(--electric);
+    }
+
+    .go-score-lbl {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.55rem;
+      color: var(--gray);
+      letter-spacing: 2px;
+    }
+
+    .restart-btn {
+      padding: 12px 32px;
+      background: transparent;
+      color: var(--electric);
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 0.9rem;
+      font-weight: 700;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      cursor: pointer;
+      border: 1px solid var(--electric);
+      clip-path: polygon(10px 0%, 100% 0%, calc(100% - 10px) 100%, 0% 100%);
+      transition: all 0.3s;
+    }
+
+    .restart-btn:hover {
+      background: rgba(0, 207, 255, 0.1);
+      box-shadow: var(--glow-e);
+    }
+
+    /* GAME GROUND FX */
+    .game-ground {
+      height: 28px;
+      background: rgba(0, 0, 0, 0.3);
+      border-top: 1px solid rgba(0, 207, 255, 0.15);
+      overflow: hidden;
+      position: relative;
+    }
+
+    .ground-circuit {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 200%;
+      height: 100%;
+      background: repeating-linear-gradient(90deg, transparent, transparent 40px, rgba(0, 207, 255, 0.08) 40px, rgba(0, 207, 255, 0.08) 41px);
+      animation: ground-scroll 4s linear infinite;
+    }
+
+    @keyframes ground-scroll {
+      0% {
+        transform: translateX(0);
+      }
+
+      100% {
+        transform: translateX(-50%);
+      }
+    }
+
+    /* ── SCANLINES overlay ── */
+    .scanlines {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+      pointer-events: none;
+      background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0, 0, 0, 0.04) 2px, rgba(0, 0, 0, 0.04) 4px);
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      position: relative;
+      z-index: 1;
+      background: rgba(5, 13, 26, 0.97);
+      border-top: 1px solid rgba(0, 207, 255, 0.1);
+      padding: 32px 5%;
+      text-align: center;
+    }
+
+    .footer-logo {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .footer-logo img {
+      height: 36px;
+      width: 36px;
+      object-fit: contain;
+    }
+
+    .footer-slogan {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.62rem;
+      letter-spacing: 3px;
+      color: var(--electric);
+      opacity: 0.7;
+      margin-bottom: 16px;
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 24px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+    }
+
+    .footer-links a {
+      color: var(--gray);
+      text-decoration: none;
+      font-size: 0.78rem;
+      transition: color 0.2s;
+    }
+
+    .footer-links a:hover {
+      color: var(--electric);
+    }
+
+    .footer-copy {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.6rem;
+      color: rgba(143, 168, 200, 0.35);
+      letter-spacing: 2px;
+    }
+
+    /* ── RESPONSIVE ── */
+    @media(max-width:640px) {
+      .nav-links {
+        display: none;
+      }
+
+      .nav-hbg {
+        display: flex;
+      }
+
+      .dash-metrics {
+        grid-template-columns: repeat(3, 1fr);
+      }
+
+      #gameCanvas {
+        height: 180px;
+      }
+
+      .go-scores {
+        gap: 20px;
+      }
+    }
+  
+    /* === AUREON MOBILE + THEME FIXES === */
+    .theme-toggle {
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      min-height: 36px;
+      padding: 7px 12px;
+      border: 1px solid rgba(0, 207, 255, 0.25);
+      background: rgba(0, 207, 255, 0.05);
+      color: var(--white);
+      font-family: 'Rajdhani', sans-serif;
+      font-weight: 700;
+      letter-spacing: 1.4px;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%);
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .theme-toggle:hover {
+      border-color: var(--electric);
+      background: rgba(0, 207, 255, 0.1);
+      box-shadow: 0 0 18px rgba(0, 207, 255, 0.18);
+    }
+
+    .theme-icon {
+      color: var(--gold);
+      font-size: 1rem;
+      line-height: 1;
+    }
+
+    .theme-copy {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      line-height: 1;
+      gap: 3px;
+    }
+
+    .theme-copy span {
+      font-size: 0.66rem;
+      color: var(--gray);
+    }
+
+    .theme-copy strong {
+      font-size: 0.72rem;
+      color: var(--electric);
+    }
+
+    .mobile-theme-toggle {
+      margin-top: 6px;
+      min-width: 210px;
+      justify-content: center;
+    }
+
+    body.light-theme {
+      --navy: #F4F8FC;
+      --navy-mid: #FFFFFF;
+      --navy-light: #E7F0FA;
+      --white: #071321;
+      --gray: #415B78;
+      --glow-blue: 0 0 18px rgba(0, 153, 204, 0.2), 0 0 44px rgba(0, 153, 204, 0.1);
+      --glow-gold: 0 0 18px rgba(184, 122, 0, 0.22), 0 0 44px rgba(184, 122, 0, 0.1);
+      background: var(--navy);
+      color: var(--white);
+    }
+
+    body.light-theme nav,
+    body.light-theme footer {
+      background: rgba(255, 255, 255, 0.92);
+      border-color: rgba(0, 153, 204, 0.22);
+    }
+
+    body.light-theme .nav-mobile,
+    body.light-theme .nav-mobile-overlay.open {
+      background: rgba(244, 248, 252, 0.98);
+    }
+
+    body.light-theme .nav-brand {
+      background: linear-gradient(135deg, #071321 38%, var(--gold));
+      background-clip: text;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    body.light-theme .card,
+    body.light-theme .produto-card,
+    body.light-theme .canal-card,
+    body.light-theme .form-container,
+    body.light-theme .rede-item,
+    body.light-theme .indicator,
+    body.light-theme .stat,
+    body.light-theme .beneficio-card,
+    body.light-theme .proximo-card,
+    body.light-theme .launch-card,
+    body.light-theme .dashboard,
+    body.light-theme .dash-card,
+    body.light-theme .demo-container,
+    body.light-theme .demo-metric,
+    body.light-theme .demo-chart-box,
+    body.light-theme .alert-item {
+      background: rgba(255, 255, 255, 0.82);
+      border-color: rgba(0, 153, 204, 0.18);
+    }
+
+    body.light-theme .hero-grid-bg,
+    body.light-theme .tech-grid {
+      opacity: 0.7;
+    }
+
+    body.light-theme #particles-canvas,
+    body.light-theme #bgCanvas {
+      opacity: 0.22;
+    }
+
+    body.light-theme .btn-primary,
+    body.light-theme .card-btn,
+    body.light-theme .launch-btn,
+    body.light-theme .btn-submit {
+      color: #04101c;
+    }
+
+    body.light-theme .theme-toggle[aria-pressed='true'] {
+      background: rgba(240, 165, 0, 0.12);
+      border-color: rgba(240, 165, 0, 0.5);
+    }
+
+    nav .nav-hamburger,
+    nav .nav-hbg {
+      position: relative;
+      z-index: 310;
+      width: 34px;
+      height: 34px;
+      align-items: center;
+      justify-content: center;
+      border: 0;
+      background: transparent;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .nav-hamburger.open span:nth-child(1),
+    .nav-hbg.open span:nth-child(1) {
+      transform: translateY(7px) rotate(45deg);
+    }
+
+    .nav-hamburger.open span:nth-child(2),
+    .nav-hbg.open span:nth-child(2) {
+      opacity: 0;
+    }
+
+    .nav-hamburger.open span:nth-child(3),
+    .nav-hbg.open span:nth-child(3) {
+      transform: translateY(-7px) rotate(-45deg);
+    }
+
+    .nav-mobile {
+      z-index: 260;
+    }
+
+    body.menu-open {
+      overflow: hidden;
+    }
+
+    .card-media {
+      min-height: 190px;
+    }
+
+    .card-badge {
+      max-width: calc(100% - 24px);
+      white-space: nowrap;
+      z-index: 3;
+      transform-origin: top right;
+    }
+
+    .demo-super-title {
+      display: block;
+      max-width: min(900px, calc(100vw - 32px));
+      margin-left: auto;
+      margin-right: auto;
+      overflow-wrap: anywhere;
+      background-clip: text;
+      -webkit-background-clip: text;
+      color: var(--electric);
+    }
+
+    .boot-sequence {
+      width: min(680px, 100%);
+      margin: 0 auto;
+    }
+
+    .boot-progress {
+      width: 100%;
+      max-width: 680px;
+      margin-left: auto;
+      margin-right: auto;
+      border-radius: 999px;
+      box-shadow: inset 0 0 0 1px rgba(0, 207, 255, 0.14);
+    }
+
+    .boot-fill {
+      max-width: 100%;
+      border-radius: inherit;
+    }
+
+    @media (max-width: 900px) {
+      nav .theme-toggle:not(.mobile-theme-toggle) {
+        display: none;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .nav-mobile {
+        padding: 24px;
+      }
+
+      .nav-mobile.open {
+        display: flex;
+      }
+
+      .nav-mobile a {
+        text-align: center;
+      }
+
+      .card-media {
+        height: 180px;
+        min-height: 180px;
+        padding-top: 30px;
+      }
+
+      .card-badge {
+        top: 10px;
+        right: 10px;
+        font-size: 0.62rem;
+        letter-spacing: 1px;
+        padding: 4px 10px;
+      }
+
+      .card-badge.lancamento {
+        animation-name: firePulseCompact;
+      }
+
+      .demo-super-title {
+        font-size: clamp(1.35rem, 8vw, 2.2rem);
+        letter-spacing: 2px;
+        line-height: 1.1;
+        padding: 0 6px;
+      }
+
+      .demo-super-sub {
+        padding: 0 10px;
+        font-size: 0.92rem;
+      }
+
+      .boot-line {
+        font-size: 0.72rem;
+        letter-spacing: 1.4px;
+        line-height: 1.5;
+      }
+
+      .boot-progress {
+        height: 7px;
+      }
+    }
+
+    @keyframes firePulseCompact {
+      0%, 100% {
+        transform: scale(1);
+        filter: brightness(1);
+        box-shadow: 0 0 10px rgba(255, 90, 0, 0.38);
+      }
+
+      50% {
+        transform: scale(1.025);
+        filter: brightness(1.25) saturate(1.35);
+        box-shadow: 0 0 18px rgba(255, 80, 0, 0.55);
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="scanlines"></div>
+  <canvas id="bgCanvas"></canvas>
+
+  <!-- ══ NAV ══ -->
+  <nav>
+    <a href="index.html" class="nav-logo">
+      <img src="LOGO_PLACEHOLDER" alt="Aureon Volts" class="footer-logo">
+      <span class="nav-brand">Aureon Volts</span>
+    </a>
+    <ul class="nav-links">
+      <li><a href="index.html">Início</a></li>
+      <li><a href="#game-section">Sistema</a></li>
+      <li><a href="contato.html">Contato</a></li>
+    </ul>
+        <button class="theme-toggle" type="button" data-theme-toggle aria-pressed="false" aria-label="Ativar tema claro">
+      <span class="theme-icon">☀</span>
+      <span class="theme-copy"><span>Tema claro</span><strong class="theme-state">Desativado</strong></span>
+    </button>
+    <div class="nav-hbg" id="burger"><span></span><span></span><span></span></div>
+  </nav>
+  <div class="nav-mobile" id="mobileMenu">
+    <a href="index.html" onclick="closeMobile()">Início</a>
+    <a href="#game-section" onclick="closeMobile()">Sistema</a>
+    <a href="contato.html" onclick="closeMobile()">Contato</a>
+    <button class="theme-toggle mobile-theme-toggle" type="button" data-theme-toggle aria-pressed="false" aria-label="Ativar tema claro">
+      <span class="theme-icon">☀</span>
+      <span class="theme-copy"><span>Tema claro</span><strong class="theme-state">Desativado</strong></span>
+    </button>
+  </div>
+
+  <!-- ══ HERO ══ -->
+  <section id="hero">
+    <div class="hero-badge">
+      <span class="badge-dot"></span>
+      AUREON VOLTS · SISTEMA EM INICIALIZAÇÃO
+    </div>
+
+    <h1 class="hero-title">
+      <span class="glitch t-electric" data-text="Sistema em">Sistema em</span><br>
+      <span class="t-gold">Desenvolvimento</span>
+    </h1>
+
+    <p class="hero-sub">A nova geração de monitoramento elétrico inteligente está chegando.</p>
+    <p class="hero-desc">Estamos construindo a plataforma mais avançada de monitoramento, proteção e otimização de
+      sistemas elétricos. Fique atento — algo grande está por vir.</p>
+
+    <!-- Dashboard -->
+    <div class="dashboard">
+      <div class="dash-header">
+        <span>AUREON OS · BOOT SEQUENCE</span>
+        <span class="dash-status"><span class="dash-status-dot"></span> EM CONSTRUÇÃO</span>
+      </div>
+      <div class="progress-label">
+        <span>CARREGANDO MÓDULOS DO SISTEMA</span>
+        <span id="progPct">0%</span>
+      </div>
+      <div class="progress-track">
+        <div class="progress-fill" id="progFill"></div>
+        <div class="progress-scan"></div>
+      </div>
+      <div class="dash-metrics">
+        <div class="metric">
+          <div class="metric-lbl">Tensão</div>
+          <div class="metric-val" id="m-tensao">—</div>
+        </div>
+        <div class="metric">
+          <div class="metric-lbl">Corrente</div>
+          <div class="metric-val ov" id="m-corrente">—</div>
+        </div>
+        <div class="metric">
+          <div class="metric-lbl">Rede IoT</div>
+          <div class="metric-val gv" id="m-iot">—</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="hero-btns">
+      <a href="contato.html" class="btn-p">Entrar em Contato</a>
+      <a href="produtos.html" class="btn-s">Ver Produtos</a>
+    </div>
+  </section>
+
+  <!-- ══ GAME SECTION ══ -->
+  <section id="game-section">
+    <div class="section-label">Mini Jogo Exclusivo</div>
+    <h2 class="section-title">⚡ <span>Pulso Elétrico</span> Runner</h2>
+    <p class="section-sub">Controle o pulso de energia e desvie das falhas elétricas enquanto o sistema finaliza o
+      carregamento.</p>
+
+    <div class="game-controls-info">
+      <div class="ctrl-chip"><span class="ctrl-key">ESPAÇO</span> Pular</div>
+      <div class="ctrl-chip"><span class="ctrl-key">↑</span> Pular</div>
+      <div class="ctrl-chip"><span class="ctrl-key">TOQUE</span> Pular</div>
+      <div class="ctrl-chip"><span class="ctrl-key">CLIQUE</span> Pular</div>
+    </div>
+
+    <div class="game-wrapper" id="gameWrapper">
+      <!-- HUD -->
+      <div class="game-hud">
+        <span class="hud-score">EFICIÊNCIA: <span id="scoreDisplay">0</span></span>
+        <span class="hud-level">NÍVEL: <span id="levelDisplay">1</span></span>
+        <span class="hud-best">RECORDE: <span id="bestDisplay">0</span></span>
+      </div>
+
+      <!-- Canvas -->
+      <canvas id="gameCanvas"></canvas>
+
+      <!-- Ground decoration -->
+      <div class="game-ground">
+        <div class="ground-circuit"></div>
+      </div>
+
+      <!-- DIAGNOSTIC OVERLAY -->
+      <div class="diag-overlay" id="diagOverlay">
+        <div class="diag-title">⚡ DIAGNÓSTICO ENERGÉTICO</div>
+        <div class="diag-lines">
+          <div class="diag-line">
+            <span style="width:120px;flex-shrink:0">REDE ELÉTRICA</span>
+            <div class="diag-bar-track">
+              <div class="diag-bar-fill" id="db1"></div>
+            </div>
+            <span id="db1v" style="width:34px;text-align:right">0%</span>
+          </div>
+          <div class="diag-line">
+            <span style="width:120px;flex-shrink:0">TENSÃO ESTÁVEL</span>
+            <div class="diag-bar-track">
+              <div class="diag-bar-fill gold" id="db2"></div>
+            </div>
+            <span id="db2v" style="width:34px;text-align:right">0%</span>
+          </div>
+          <div class="diag-line">
+            <span style="width:120px;flex-shrink:0">PROTEÇÃO ATIVA</span>
+            <div class="diag-bar-track">
+              <div class="diag-bar-fill green" id="db3"></div>
+            </div>
+            <span id="db3v" style="width:34px;text-align:right">0%</span>
+          </div>
+          <div class="diag-line">
+            <span style="width:120px;flex-shrink:0">IoT SINCRONIZ.</span>
+            <div class="diag-bar-track">
+              <div class="diag-bar-fill" id="db4"></div>
+            </div>
+            <span id="db4v" style="width:34px;text-align:right">0%</span>
+          </div>
+        </div>
+        <button class="diag-start-btn" id="startBtn">▶ INICIAR SIMULAÇÃO</button>
+      </div>
+
+      <!-- GAME OVER OVERLAY -->
+      <div class="gameover-overlay" id="gameOver">
+        <div class="go-glitch">FALHA DE SISTEMA</div>
+        <div class="go-sub">DETECTADO · ERRO CRÍTICO NA REDE</div>
+        <div class="go-scores">
+          <div class="go-score-item">
+            <div class="go-score-val" id="finalScore">0</div>
+            <div class="go-score-lbl">EFICIÊNCIA</div>
+          </div>
+          <div class="go-score-item">
+            <div class="go-score-val" id="finalBest">0</div>
+            <div class="go-score-lbl">RECORDE</div>
+          </div>
+        </div>
+        <button class="restart-btn" id="restartBtn">↺ REINICIAR REDE</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ FOOTER ══ -->
+  <footer>
+    <div class="footer-logo">
+      <img src="LOGO_PLACEHOLDER" alt="Aureon Volts">
+      <span class="nav-brand">Aureon Volts</span>
+    </div>
+    <div class="footer-slogan">MONITORAMENTO • PROTEÇÃO • OTIMIZAÇÃO</div>
+    <div class="footer-links">
+      <a href="index.html">Início</a>
+      <a href="produtos.html">Produtos</a>
+      <a href="contato.html">Contato</a>
+      <a href="mailto:aureon.volts@gmail.com">aureon.volts@gmail.com</a>
+      <a href="https://www.instagram.com/aureon.volts/" target="_blank">@aureon.volts</a>
+    </div>
+    <div class="footer-copy">© 2024 AUREON VOLTS · TODOS OS DIREITOS RESERVADOS · V2.4.1</div>
+  </footer>
+
+  <script>
+    /* ════════════════════════════════
+       LOGO INJECTION
+    ════════════════════════════════ */
+    const LOGO_URL = "https://i.ibb.co/Csp9CF32/imagem-2026-06-16-161133298.png";
+
+    document.querySelectorAll('img[src="LOGO_PLACEHOLDER"]').forEach(img => {
+      img.src = LOGO_URL;
+    });
+    /* ════════════════════════════════
+       BG PARTICLES (IoT Graph style)
+    ════════════════════════════════ */
+    const bgC = document.getElementById('bgCanvas');
+    const bgX = bgC.getContext('2d');
+    let BW, BH;
+    function resizeBg() {
+      BW = bgC.width = window.innerWidth;
+      BH = bgC.height = window.innerHeight;
+    }
+    resizeBg();
+    window.addEventListener('resize', resizeBg);
+
+    const nodes = [];
+    for (let i = 0; i < 55; i++) {
+      nodes.push({
+        x: Math.random() * BW, y: Math.random() * BH,
+        vx: (Math.random() - 0.5) * 0.35, vy: (Math.random() - 0.5) * 0.35,
+        r: Math.random() * 2 + 1,
+        c: Math.random() > 0.65 ? [240, 165, 0] : [0, 207, 255],
+        pulse: Math.random() * Math.PI * 2
+      });
+    }
+    function drawBg() {
+      bgX.clearRect(0, 0, BW, BH);
+      // subtle grid
+      bgX.strokeStyle = 'rgba(0,207,255,0.04)';
+      bgX.lineWidth = 1;
+      for (let x = 0; x < BW; x += 60) { bgX.beginPath(); bgX.moveTo(x, 0); bgX.lineTo(x, BH); bgX.stroke(); }
+      for (let y = 0; y < BH; y += 60) { bgX.beginPath(); bgX.moveTo(0, y); bgX.lineTo(BW, y); bgX.stroke(); }
+
+      const t = Date.now() * 0.001;
+      nodes.forEach(n => {
+        n.x += n.vx; n.y += n.vy; n.pulse += 0.04;
+        if (n.x < 0) n.x = BW; if (n.x > BW) n.x = 0;
+        if (n.y < 0) n.y = BH; if (n.y > BH) n.y = 0;
+        const alpha = 0.4 + 0.3 * Math.sin(n.pulse);
+        bgX.beginPath(); bgX.arc(n.x, n.y, n.r, 0, Math.PI * 2);
+        bgX.fillStyle = `rgba(${n.c[0]},${n.c[1]},${n.c[2]},${alpha})`;
+        bgX.fill();
+      });
+      for (let i = 0; i < nodes.length; i++) {
+        for (let j = i + 1; j < nodes.length; j++) {
+          const dx = nodes[i].x - nodes[j].x, dy = nodes[i].y - nodes[j].y;
+          const d = Math.sqrt(dx * dx + dy * dy);
+          if (d < 130) {
+            bgX.beginPath();
+            bgX.strokeStyle = `rgba(0,207,255,${0.07 * (1 - d / 130)})`;
+            bgX.lineWidth = 0.8;
+            bgX.moveTo(nodes[i].x, nodes[i].y);
+            bgX.lineTo(nodes[j].x, nodes[j].y);
+            bgX.stroke();
+          }
+        }
+      }
+      requestAnimationFrame(drawBg);
+    }
+    drawBg();
+
+    /* ════════════════════════════════
+       DASHBOARD LIVE METRICS
+    ════════════════════════════════ */
+    function rnd(a, b, d = 1) { return (Math.random() * (b - a) + a).toFixed(d); }
+    function updateMetrics() {
+      document.getElementById('m-tensao').textContent = rnd(218, 222) + 'V';
+      document.getElementById('m-corrente').textContent = rnd(14, 22) + 'A';
+      const iotStates = ['OFFLINE', 'SYNC...', 'ONLINE'];
+      const si = Math.floor(Math.random() * 3);
+      const el = document.getElementById('m-iot');
+      el.textContent = iotStates[si];
+      el.style.color = si === 2 ? 'var(--green)' : si === 1 ? 'var(--gold)' : 'var(--red)';
+    }
+    setInterval(updateMetrics, 2200); updateMetrics();
+
+    /* Progress bar simulation */
+    let progVal = 0;
+    const steps = [
+      'INICIALIZANDO KERNEL...',
+      'CARREGANDO DRIVERS ELÉTRICOS...',
+      'CALIBRANDO SENSORES...',
+      'VERIFICANDO REDE IoT...',
+      'MÓDULOS DE IA CARREGANDO...',
+      'COMPILANDO ALGORITMOS...',
+      'SINCRONIZANDO NUVEM...',
+      'AJUSTANDO PARÂMETROS...'
+    ];
+    let stepIdx = 0;
+    function advanceProgress() {
+      if (progVal >= 73) return;
+      const inc = Math.random() * 4 + 1;
+      progVal = Math.min(73, progVal + inc);
+      document.getElementById('progFill').style.width = progVal + '%';
+      document.getElementById('progPct').textContent = Math.round(progVal) + '%';
+      stepIdx = (stepIdx + 1) % steps.length;
+      const delay = Math.random() * 600 + 300;
+      setTimeout(advanceProgress, delay);
+    }
+    setTimeout(advanceProgress, 800);
+
+    /* ════════════════════════════════
+       DIAGNOSTIC ANIMATION
+    ════════════════════════════════ */
+    function runDiag() {
+      const bars = [
+        { bar: 'db1', val: 'db1v', target: 94 },
+        { bar: 'db2', val: 'db2v', target: 87 },
+        { bar: 'db3', val: 'db3v', target: 100 },
+        { bar: 'db4', val: 'db4v', target: 78 },
+      ];
+      bars.forEach((b, i) => {
+        setTimeout(() => {
+          let v = 0;
+          const iv = setInterval(() => {
+            v = Math.min(b.target, v + Math.random() * 8 + 2);
+            document.getElementById(b.bar).style.width = v + '%';
+            document.getElementById(b.val).textContent = Math.round(v) + '%';
+            if (v >= b.target) clearInterval(iv);
+          }, 40);
+        }, i * 350);
+      });
+    }
+
+    document.getElementById('startBtn').addEventListener('click', () => {
+      document.getElementById('diagOverlay').style.display = 'none';
+      startGame();
+    });
+
+    /* ════════════════════════════════
+       MINI GAME ENGINE
+    ════════════════════════════════ */
+    const gc = document.getElementById('gameCanvas');
+    const gx = gc.getContext('2d');
+    let GW, GH, GROUND, scale;
+
+    function resizeGame() {
+      GW = gc.width = gc.offsetWidth;
+      GH = gc.height = gc.offsetHeight;
+      scale = GW / 900;
+      GROUND = GH - 10;
+    }
+
+    let gameRunning = false, gameFrame = 0, score = 0, best = 0, speed = 0, level = 1;
+    let obstacles = [], powerups = [], particles = [];
+    let player, lastObs = 0, lastPow = 0;
+
+    /* Player */
+    function initPlayer() {
+      const s = Math.max(28, 34 * scale);
+      player = {
+        x: 80 * scale, y: GROUND - s,
+        w: s * 0.7, h: s,
+        vy: 0, jumping: false, doubleJump: false,
+        trail: [], shieldTime: 0,
+        glow: 0
+      };
+    }
+
+    function jump() {
+      if (!gameRunning) return;
+      if (!player.jumping) {
+        player.vy = -14 * Math.max(0.8, scale);
+        player.jumping = true;
+        player.doubleJump = false;
+        spawnParticles(player.x + player.w / 2, player.y + player.h, 6, '#00CFFF');
+      } else if (!player.doubleJump) {
+        player.vy = -11 * Math.max(0.8, scale);
+        player.doubleJump = true;
+        spawnParticles(player.x + player.w / 2, player.y + player.h, 8, '#00FF99');
+      }
+    }
+
+    /* Obstacles — electric themed */
+    const OBS_TYPES = [
+      { id: 'overload', color: '#FF4D6A', color2: '#FF0040', label: '⚠', w: 22, h: 44, pulseColor: 'rgba(255,77,106,0.4)' },
+      { id: 'spike', color: '#F0A500', color2: '#FF8C00', label: '▲', w: 18, h: 50, pulseColor: 'rgba(240,165,0,0.4)' },
+      { id: 'arc', color: '#00CFFF', color2: '#0080FF', label: '⚡', w: 26, h: 38, pulseColor: 'rgba(0,207,255,0.4)' },
+      { id: 'short', color: '#FF4D6A', color2: '#FF8800', label: '💥', w: 34, h: 28, pulseColor: 'rgba(255,77,106,0.3)' },
+      { id: 'cable', color: '#F0A500', color2: '#00CFFF', label: '⌇', w: 16, h: 56, pulseColor: 'rgba(0,207,255,0.3)' },
+      { id: 'trafo', color: '#8FA8C8', color2: '#445577', label: '▮', w: 40, h: 36, pulseColor: 'rgba(143,168,200,0.2)' },
+    ];
+    const POW_TYPES = [
+      { id: 'stab', color: '#00FF99', label: '⊕', label2: '+ESTAB' },
+      { id: 'efic', color: '#00CFFF', label: '★', label2: '+EFIC' },
+      { id: 'shield', color: '#F0A500', label: '◈', label2: '+PROT' },
+    ];
+
+    function spawnObstacle() {
+      const t = OBS_TYPES[Math.floor(Math.random() * OBS_TYPES.length)];
+      const sw = t.w * Math.max(0.8, scale);
+      const sh = t.h * Math.max(0.8, scale);
+      // chance of double obstacle at higher levels
+      const count = level >= 3 && Math.random() < 0.25 ? 2 : 1;
+      for (let i = 0; i < count; i++) {
+        obstacles.push({
+          x: GW + i * sw * 1.6,
+          y: GROUND - sh,
+          w: sw, h: sh,
+          type: t, pulse: 0
+        });
+      }
+    }
+
+    function spawnPowerup() {
+      const t = POW_TYPES[Math.floor(Math.random() * POW_TYPES.length)];
+      const s = 22 * Math.max(0.8, scale);
+      powerups.push({
+        x: GW,
+        y: GROUND - s - (GROUND * 0.28),
+        w: s, h: s, type: t, pulse: 0
+      });
+    }
+
+    function spawnParticles(x, y, n, color) {
+      for (let i = 0; i < n; i++) {
+        particles.push({
+          x, y,
+          vx: (Math.random() - 0.5) * 5,
+          vy: (Math.random() - 0.5) * 5 - 2,
+          life: 1, color,
+          size: Math.random() * 3 + 1
+        });
+      }
+    }
+
+    function startGame() {
+      resizeGame();
+      initPlayer();
+      obstacles = []; powerups = []; particles = [];
+      score = 0; gameFrame = 0; speed = 3.5; level = 1;
+      lastObs = 0; lastPow = 0;
+      gameRunning = true;
+      document.getElementById('gameOver').classList.remove('show');
+      gameLoop();
+    }
+
+    function endGame() {
+      gameRunning = false;
+      if (score > best) best = score;
+      document.getElementById('finalScore').textContent = score;
+      document.getElementById('finalBest').textContent = best;
+      document.getElementById('bestDisplay').textContent = best;
+      document.getElementById('gameOver').classList.add('show');
+    }
+
+    function aabb(a, b) {
+      const pad = 6 * scale;
+      return a.x + pad < b.x + b.w - pad &&
+        a.x + a.w - pad > b.x + pad &&
+        a.y + pad < b.y + b.h - pad &&
+        a.y + a.h - pad > b.y + pad;
+    }
+
+    function drawPlayer() {
+      const px = player.x, py = player.y, pw = player.w, ph = player.h;
+      const cx = px + pw / 2, cy = py + ph / 2;
+
+      // trail
+      player.trail.push({ x: cx, y: cy, a: 0.8 });
+      if (player.trail.length > 10) player.trail.shift();
+      player.trail.forEach((t, i) => {
+        t.a *= 0.82;
+        const r = (i / player.trail.length) * (pw * 0.35);
+        gx.beginPath(); gx.arc(t.x, t.y, r, 0, Math.PI * 2);
+        gx.fillStyle = `rgba(0,207,255,${t.a * 0.3})`; gx.fill();
+      });
+
+      // body glow
+      const glowR = pw * 1.2 + Math.sin(Date.now() * 0.006) * 4;
+      const grd = gx.createRadialGradient(cx, cy, 0, cx, cy, glowR);
+      grd.addColorStop(0, 'rgba(0,207,255,0.25)');
+      grd.addColorStop(1, 'rgba(0,207,255,0)');
+      gx.beginPath(); gx.arc(cx, cy, glowR, 0, Math.PI * 2);
+      gx.fillStyle = grd; gx.fill();
+
+      // shield
+      if (player.shieldTime > 0) {
+        gx.beginPath(); gx.arc(cx, cy, pw * 0.9, 0, Math.PI * 2);
+        gx.strokeStyle = `rgba(240,165,0,${0.6 + 0.4 * Math.sin(Date.now() * 0.01)})`;
+        gx.lineWidth = 2 * scale; gx.stroke();
+      }
+
+      // body (lightning bolt shape)
+      gx.save();
+      gx.translate(cx, cy);
+      gx.shadowColor = '#00CFFF'; gx.shadowBlur = 16;
+      gx.strokeStyle = '#00CFFF'; gx.lineWidth = 2.5 * scale;
+      gx.beginPath();
+      const bh = ph * 0.55;
+      gx.moveTo(pw * 0.15, -bh);
+      gx.lineTo(-pw * 0.1, 0);
+      gx.lineTo(pw * 0.12, 0);
+      gx.lineTo(-pw * 0.15, bh);
+      gx.stroke();
+
+      gx.shadowBlur = 8;
+      gx.fillStyle = 'rgba(0,255,153,0.9)';
+      gx.beginPath(); gx.arc(0, -bh * 0.85, 2.5 * scale, 0, Math.PI * 2); gx.fill();
+      gx.restore();
+    }
+
+    function drawObstacle(o) {
+      o.pulse += 0.08;
+      const cx = o.x + o.w / 2, cy = o.y + o.h / 2;
+      const t = o.type;
+
+      // glow
+      const grd = gx.createRadialGradient(cx, cy, 0, cx, cy, o.w);
+      grd.addColorStop(0, t.pulseColor);
+      grd.addColorStop(1, 'rgba(0,0,0,0)');
+      gx.beginPath(); gx.arc(cx, cy, o.w * (1 + 0.2 * Math.sin(o.pulse)), 0, Math.PI * 2);
+      gx.fillStyle = grd; gx.fill();
+
+      // body
+      gx.save(); gx.shadowColor = t.color; gx.shadowBlur = 12;
+
+      if (t.id === 'spike') {
+        gx.fillStyle = t.color;
+        gx.beginPath();
+        gx.moveTo(cx, o.y);
+        gx.lineTo(cx - o.w / 2, o.y + o.h);
+        gx.lineTo(cx + o.w / 2, o.y + o.h);
+        gx.closePath(); gx.fill();
+      } else if (t.id === 'cable') {
+        gx.strokeStyle = t.color; gx.lineWidth = 3 * scale;
+        for (let i = 0; i < 3; i++) {
+          const ox = (i - 1) * 5 * scale;
+          gx.beginPath();
+          gx.moveTo(cx + ox, o.y);
+          for (let fy = 0; fy < o.h; fy += 8) {
+            gx.lineTo(cx + ox + (i % 2 === 0 ? 4 : -4) * scale * Math.sin(o.pulse + fy), o.y + fy);
+          }
+          gx.stroke();
+        }
+      } else {
+        gx.strokeStyle = t.color; gx.lineWidth = 2 * scale;
+        gx.fillStyle = `rgba(${hexToRgb(t.color)},0.15)`;
+        gx.fillRect(o.x, o.y, o.w, o.h);
+        gx.strokeRect(o.x, o.y, o.w, o.h);
+      }
+
+      // label
+      gx.shadowBlur = 0;
+      gx.fillStyle = '#fff'; gx.font = `bold ${Math.round(14 * scale)}px Arial`;
+      gx.textAlign = 'center'; gx.textBaseline = 'middle';
+      gx.fillText(t.label, cx, cy);
+      gx.restore();
+    }
+
+    function drawPowerup(p) {
+      p.pulse += 0.07;
+      const cx = p.x + p.w / 2, cy = p.y + p.h / 2;
+      const t = p.type;
+      const bob = Math.sin(p.pulse) * 4;
+
+      gx.save();
+      gx.shadowColor = t.color; gx.shadowBlur = 14;
+      gx.strokeStyle = t.color; gx.lineWidth = 1.5 * scale;
+      gx.fillStyle = `rgba(${hexToRgb(t.color)},0.12)`;
+      const s = p.w / 2 + bob * 0.3;
+      gx.beginPath();
+      gx.arc(cx, cy + bob, s, 0, Math.PI * 2);
+      gx.fill(); gx.stroke();
+
+      gx.fillStyle = t.color;
+      gx.font = `bold ${Math.round(13 * scale)}px Arial`;
+      gx.textAlign = 'center'; gx.textBaseline = 'middle';
+      gx.fillText(t.label, cx, cy + bob);
+      gx.restore();
+    }
+
+    function hexToRgb(hex) {
+      const r = parseInt(hex.slice(1, 3), 16);
+      const g = parseInt(hex.slice(3, 5), 16);
+      const b = parseInt(hex.slice(5, 7), 16);
+      return `${r},${g},${b}`;
+    }
+
+    function drawGround() {
+      gx.strokeStyle = 'rgba(0,207,255,0.25)';
+      gx.lineWidth = 1;
+      gx.setLineDash([6, 8]);
+      gx.beginPath(); gx.moveTo(0, GROUND); gx.lineTo(GW, GROUND); gx.stroke();
+      gx.setLineDash([]);
+    }
+
+    function drawHUD() {
+      // mini oscilloscope bar
+      gx.fillStyle = 'rgba(0,207,255,0.08)';
+      gx.fillRect(0, GH - 8, GW, 8);
+      for (let x = 0; x < GW; x += 4) {
+        const h = 2 + Math.sin((x + gameFrame * 3) * 0.06) * 3;
+        gx.fillStyle = `rgba(0,207,255,${0.3 + 0.2 * Math.sin((x + gameFrame) * 0.1)})`;
+        gx.fillRect(x, GH - h - 1, 3, h);
+      }
+    }
+
+    function drawParticlesGame() {
+      particles.forEach(p => {
+        p.x += p.vx; p.y += p.vy; p.vy += 0.2; p.life -= 0.04;
+        if (p.life <= 0) return;
+        gx.beginPath(); gx.arc(p.x, p.y, p.size * p.life, 0, Math.PI * 2);
+        gx.fillStyle = p.color.replace(')', `,${p.life})`).replace('rgb', 'rgba');
+        gx.fill();
+      });
+      particles = particles.filter(p => p.life > 0);
+    }
+
+    function gameLoop() {
+      if (!gameRunning) return;
+      gameFrame++;
+      score = Math.floor(gameFrame / 6);
+
+      // speed & level
+      speed = 3.5 + score * 0.006;
+      level = Math.floor(score / 200) + 1;
+      document.getElementById('scoreDisplay').textContent = score;
+      document.getElementById('levelDisplay').textContent = level;
+
+      // clear
+      gx.clearRect(0, 0, GW, GH);
+
+      // bg gradient
+      const bgGrd = gx.createLinearGradient(0, 0, 0, GH);
+      bgGrd.addColorStop(0, '#030810');
+      bgGrd.addColorStop(1, '#050D1A');
+      gx.fillStyle = bgGrd; gx.fillRect(0, 0, GW, GH);
+
+      // scrolling bg lines
+      for (let i = 0; i < 5; i++) {
+        const lineX = ((gameFrame * speed * 0.3 * (i + 1) * 0.5) % (GW + 200)) - 200;
+        gx.strokeStyle = `rgba(0,207,255,${0.03 + i * 0.01})`;
+        gx.lineWidth = 1;
+        gx.setLineDash([20, 40]);
+        gx.beginPath(); gx.moveTo(GW - lineX, 0); gx.lineTo(GW - lineX + 80, GH); gx.stroke();
+        gx.setLineDash([]);
+      }
+
+      // physics
+      player.vy += 0.7 * Math.max(0.8, scale);
+      player.y += player.vy;
+      if (player.y >= GROUND - player.h) {
+        player.y = GROUND - player.h;
+        player.vy = 0;
+        player.jumping = false;
+        player.doubleJump = false;
+      }
+      if (player.shieldTime > 0) player.shieldTime--;
+
+      // spawn
+      const obsGap = Math.max(60, 120 - level * 8);
+      if (gameFrame - lastObs > obsGap + Math.random() * 60) {
+        spawnObstacle(); lastObs = gameFrame;
+      }
+      if (gameFrame - lastPow > 280 + Math.random() * 120) {
+        spawnPowerup(); lastPow = gameFrame;
+      }
+
+      // update & draw obstacles
+      obstacles.forEach(o => { o.x -= speed; drawObstacle(o); });
+      obstacles = obstacles.filter(o => o.x + o.w > -10);
+
+      // update & draw powerups
+      powerups.forEach(p => { p.x -= speed; drawPowerup(p); });
+      powerups = powerups.filter(p => p.x + p.w > -10);
+
+      // draw ground & player
+      drawGround();
+      drawParticlesGame();
+      drawPlayer();
+      drawHUD();
+
+      // collision — obstacles
+      let hit = false;
+      obstacles.forEach(o => {
+        if (aabb(player, o)) {
+          if (player.shieldTime > 0) {
+            player.shieldTime = 0;
+            spawnParticles(o.x + o.w / 2, o.y, 12, '#F0A500');
+            o.x = -999;
+          } else {
+            hit = true;
+          }
+        }
+      });
+      if (hit) {
+        spawnParticles(player.x + player.w / 2, player.y + player.h / 2, 20, '#FF4D6A');
+        setTimeout(endGame, 150);
+        gameRunning = false;
+        return;
+      }
+
+      // collision — powerups
+      powerups.forEach(p => {
+        if (aabb(player, p)) {
+          spawnParticles(p.x + p.w / 2, p.y + p.h / 2, 10, p.type.color);
+          if (p.type.id === 'shield') player.shieldTime = 220;
+          score += 30;
+          p.x = -999;
+        }
+      });
+      powerups = powerups.filter(p => p.x > -900);
+
+      requestAnimationFrame(gameLoop);
+    }
+
+    /* Controls */
+    function handleJump(e) {
+      if (e) { e.preventDefault(); }
+      if (!gameRunning && document.getElementById('gameOver').classList.contains('show')) return;
+      if (!gameRunning) return;
+      jump();
+    }
+
+    document.addEventListener('keydown', e => {
+      if (e.code === 'Space' || e.code === 'ArrowUp') {
+        e.preventDefault(); handleJump();
+      }
+    });
+    gc.addEventListener('click', handleJump);
+    gc.addEventListener('touchstart', e => { e.preventDefault(); handleJump(); }, { passive: false });
+    document.getElementById('restartBtn').addEventListener('click', () => {
+      document.getElementById('gameOver').classList.remove('show');
+      document.getElementById('diagOverlay').style.display = 'none';
+      startGame();
+    });
+
+    window.addEventListener('resize', () => {
+      if (gameRunning) resizeGame();
+    });
+
+    /* ════════════════════════════════
+       HAMBURGER
+    ════════════════════════════════ */
+    document.getElementById('burger').addEventListener('click', () => { });
+
+    /* ════════════════════════════════
+       AUTO-RUN DIAGNOSTIC ON LOAD
+    ════════════════════════════════ */
+    window.addEventListener('load', () => {
+      runDiag();
+    });
+  
+    // === AUREON INTERACTION FIXES ===
+    (function () {
+      const navBurger = document.getElementById('burger');
+      const navMenu = document.getElementById('mobileMenu');
+      const navOverlay = document.getElementById('mobileOverlay');
+
+      function setMenu(open) {
+        if (!navBurger || !navMenu) return;
+        navBurger.classList.toggle('open', open);
+        navMenu.classList.toggle('open', open);
+        if (navOverlay) navOverlay.classList.toggle('open', open);
+        navBurger.setAttribute('aria-expanded', String(open));
+        document.body.classList.toggle('menu-open', open);
+      }
+
+      if (navBurger && navMenu) {
+        navBurger.setAttribute('role', 'button');
+        navBurger.setAttribute('aria-label', 'Abrir menu');
+        navBurger.setAttribute('aria-expanded', 'false');
+        navBurger.addEventListener('click', function (event) {
+          event.preventDefault();
+          event.stopImmediatePropagation();
+          setMenu(!navMenu.classList.contains('open'));
+        }, true);
+        if (navOverlay) navOverlay.addEventListener('click', function () { setMenu(false); });
+        navMenu.querySelectorAll('a').forEach(function (link) {
+          link.addEventListener('click', function () { setMenu(false); });
+        });
+        window.closeMobile = function () { setMenu(false); };
+        window.addEventListener('resize', function () {
+          if (window.innerWidth > 768) setMenu(false);
+        });
+        document.addEventListener('keydown', function (event) {
+          if (event.key === 'Escape') setMenu(false);
+        });
+      }
+
+      const themeButtons = document.querySelectorAll('[data-theme-toggle]');
+      function applyTheme(light) {
+        document.body.classList.toggle('light-theme', light);
+        themeButtons.forEach(function (button) {
+          const state = button.querySelector('.theme-state');
+          const icon = button.querySelector('.theme-icon');
+          button.setAttribute('aria-pressed', String(light));
+          button.setAttribute('aria-label', light ? 'Desativar tema claro' : 'Ativar tema claro');
+          if (state) state.textContent = light ? 'Ativado' : 'Desativado';
+          if (icon) icon.textContent = light ? '◐' : '☀';
+        });
+      }
+
+      let savedTheme = 'dark';
+      try { savedTheme = localStorage.getItem('aureon-theme') || 'dark'; } catch (error) {}
+      applyTheme(savedTheme === 'light');
+      themeButtons.forEach(function (button) {
+        button.addEventListener('click', function () {
+          const next = !document.body.classList.contains('light-theme');
+          try { localStorage.setItem('aureon-theme', next ? 'light' : 'dark'); } catch (error) {}
+          applyTheme(next);
+        });
+      });
+    })();
+  </script>
+</body>
+
+</html>
