@@ -1,0 +1,2585 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Aureon Volts</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js">
+    (function initVoltEyeStoredTheme() {
+      const savedTheme = localStorage.getItem('volteye-theme');
+      if (savedTheme !== 'light') return;
+      appState.theme = 'light';
+      const toggle = document.getElementById('theme-toggle');
+      const stateText = document.getElementById('theme-state-text');
+      document.body.classList.add('light');
+      if (toggle) {
+        toggle.classList.add('on');
+        toggle.setAttribute('aria-checked', 'true');
+        toggle.setAttribute('aria-label', 'Desativar tema claro');
+      }
+      if (stateText) stateText.textContent = 'Tema claro ativado';
+    })();
+  </script>
+  <style>
+    /* ===== RESET & BASE ===== */
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+
+    :root {
+      --bg: #0a0e1a;
+      --bg2: #111827;
+      --bg3: #1a2236;
+      --bg4: #1e2a3a;
+      --border: rgba(255, 255, 255, 0.08);
+      --border2: rgba(255, 255, 255, 0.14);
+      --text: #f0f4ff;
+      --text2: #8fa3c0;
+      --text3: #5a6e85;
+      --accent: #00d4ff;
+      --accent2: #0099cc;
+      --accent-glow: rgba(0, 212, 255, 0.15);
+      --green: #00e676;
+      --green-bg: rgba(0, 230, 118, 0.12);
+      --yellow: #ffca28;
+      --yellow-bg: rgba(255, 202, 40, 0.12);
+      --red: #ff5252;
+      --red-bg: rgba(255, 82, 82, 0.12);
+      --orange: #ff9100;
+      --orange-bg: rgba(255, 145, 0, 0.12);
+      --radius: 12px;
+      --radius-sm: 8px;
+      --shadow: 0 2px 12px rgba(0, 0, 0, 0.4);
+      --transition: 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .light {
+      --bg: #f0f4f8;
+      --bg2: #ffffff;
+      --bg3: #e8eef5;
+      --bg4: #dde5ef;
+      --border: rgba(0, 0, 0, 0.08);
+      --border2: rgba(0, 0, 0, 0.14);
+      --text: #0d1b2e;
+      --text2: #4a6080;
+      --text3: #8fa3be;
+      --accent: #0077aa;
+      --accent2: #005588;
+      --accent-glow: rgba(0, 119, 170, 0.1);
+      --shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    html,
+    body {
+      height: 100%;
+      width: 100%;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      overflow-y: auto;
+      /* <--- Permite rolagem vertical se necessário */
+      font-size: 16px;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    /* ===== APP SHELL ===== */
+    #app {
+      width: 100%;
+      min-height: 100vh;
+      /* <--- Garante pelo menos o tamanho do ecrã, mas expande se houver mais conteúdo */
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+
+    /* ===== SCREENS ===== */
+    .screen {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      opacity: 0;
+      pointer-events: none;
+      transform: translateX(30px);
+      transition: opacity var(--transition), transform var(--transition);
+      overflow: hidden;
+    }
+
+    .screen.active {
+      opacity: 1;
+      pointer-events: all;
+      transform: translateX(0);
+    }
+
+    .screen.slide-out {
+      opacity: 0;
+      pointer-events: none;
+      transform: translateX(-30px);
+    }
+
+    /* ===== HEADER ===== */
+    .header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 16px 20px 12px;
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+      z-index: 10;
+    }
+
+    .header-back {
+      width: 36px;
+      height: 36px;
+      border: 1px solid var(--border2);
+      border-radius: var(--radius-sm);
+      background: var(--bg3);
+      color: var(--text);
+      font-size: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: background var(--transition);
+      flex-shrink: 0;
+    }
+
+    .header-back:hover {
+      background: var(--bg4);
+    }
+
+    .header-title {
+      font-size: 17px;
+      font-weight: 600;
+      color: var(--text);
+      flex: 1;
+    }
+
+    .header-sub {
+      font-size: 12px;
+      color: var(--text2);
+      margin-top: 1px;
+    }
+
+    /* ===== SCROLL BODY ===== */
+    .scroll-body {
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px 20px 24px;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .scroll-body::-webkit-scrollbar {
+      width: 4px;
+    }
+
+    .scroll-body::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    .scroll-body::-webkit-scrollbar-thumb {
+      background: var(--border2);
+      border-radius: 4px;
+    }
+
+    /* ===== CARDS ===== */
+    .card {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px;
+      margin-bottom: 12px;
+    }
+
+    .card-label {
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text3);
+      margin-bottom: 8px;
+    }
+
+    /* ===== METRIC GRID ===== */
+    .metric-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .metric-card {
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 14px 12px;
+    }
+
+    .metric-label {
+      font-size: 11px;
+      color: var(--text2);
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .metric-value {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--text);
+      line-height: 1;
+    }
+
+    .metric-unit {
+      font-size: 12px;
+      font-weight: 400;
+      color: var(--text2);
+      margin-left: 3px;
+    }
+
+    .metric-card.accent {
+      border-color: var(--accent2);
+    }
+
+    .metric-card.accent .metric-value {
+      color: var(--accent);
+    }
+
+    /* ===== STATUS BADGE ===== */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .badge.normal {
+      background: var(--green-bg);
+      color: var(--green);
+    }
+
+    .badge.warning {
+      background: var(--yellow-bg);
+      color: var(--yellow);
+    }
+
+    .badge.critical {
+      background: var(--red-bg);
+      color: var(--red);
+    }
+
+    .badge.info {
+      background: var(--accent-glow);
+      color: var(--accent);
+    }
+
+    .badge-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: currentColor;
+    }
+
+    /* ===== BUTTONS ===== */
+    .btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 13px 20px;
+      border-radius: var(--radius-sm);
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      transition: all var(--transition);
+      width: 100%;
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: #001520;
+    }
+
+    .btn-primary:hover {
+      background: var(--accent2);
+      transform: translateY(-1px);
+    }
+
+    .btn-secondary {
+      background: var(--bg3);
+      border: 1px solid var(--border2);
+      color: var(--text);
+    }
+
+    .btn-secondary:hover {
+      background: var(--bg4);
+    }
+
+    .btn-danger {
+      background: var(--red-bg);
+      border: 1px solid rgba(255, 82, 82, 0.3);
+      color: var(--red);
+    }
+
+    .btn:active {
+      transform: scale(0.97);
+    }
+
+    /* ===== CIRCUIT LIST ITEM ===== */
+    .circuit-item {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 14px 16px;
+      margin-bottom: 8px;
+      cursor: pointer;
+      transition: all var(--transition);
+    }
+
+    .circuit-item:hover {
+      border-color: var(--border2);
+      background: var(--bg3);
+    }
+
+    .circuit-icon {
+      width: 42px;
+      height: 42px;
+      background: var(--bg3);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      flex-shrink: 0;
+    }
+
+    .circuit-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .circuit-name {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .circuit-stats {
+      font-size: 12px;
+      color: var(--text2);
+      margin-top: 2px;
+    }
+
+    .circuit-right {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 4px;
+    }
+
+    .circuit-power {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--accent);
+    }
+
+    .circuit-arrow {
+      color: var(--text3);
+      font-size: 16px;
+    }
+
+    /* ===== DETAIL ROWS ===== */
+    .detail-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .detail-row:last-child {
+      border-bottom: none;
+    }
+
+    .detail-row-label {
+      font-size: 13px;
+      color: var(--text2);
+    }
+
+    .detail-row-value {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    /* ===== ALERT ITEM ===== */
+    .alert-item {
+      display: flex;
+      gap: 12px;
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 14px;
+      margin-bottom: 8px;
+    }
+
+    .alert-icon {
+      font-size: 22px;
+      flex-shrink: 0;
+    }
+
+    .alert-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .alert-desc {
+      font-size: 12px;
+      color: var(--text2);
+      margin-top: 3px;
+    }
+
+    .alert-time {
+      font-size: 11px;
+      color: var(--text3);
+      margin-top: 5px;
+    }
+
+    /* ===== CHART TABS ===== */
+    .tab-row {
+      display: flex;
+      gap: 6px;
+      overflow-x: auto;
+      padding-bottom: 4px;
+      margin-bottom: 12px;
+      scrollbar-width: none;
+    }
+
+    .tab-row::-webkit-scrollbar {
+      display: none;
+    }
+
+    .tab-btn {
+      padding: 7px 14px;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      white-space: nowrap;
+      border: 1px solid var(--border2);
+      background: var(--bg3);
+      color: var(--text2);
+      transition: all var(--transition);
+      flex-shrink: 0;
+    }
+
+    .tab-btn.active {
+      background: var(--accent);
+      color: #001520;
+      border-color: var(--accent);
+      font-weight: 600;
+    }
+
+    /* ===== SETTINGS ===== */
+    .setting-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 0;
+      border-bottom: 1px solid var(--border);
+      gap: 12px;
+    }
+
+    .setting-row:last-child {
+      border-bottom: none;
+    }
+
+    .setting-label {
+      font-size: 14px;
+      color: var(--text);
+    }
+
+    .setting-sub {
+      font-size: 12px;
+      color: var(--text2);
+      margin-top: 2px;
+    }
+
+    .setting-input {
+      background: var(--bg3);
+      border: 1px solid var(--border2);
+      border-radius: var(--radius-sm);
+      color: var(--text);
+      font-size: 14px;
+      padding: 7px 10px;
+      width: 110px;
+      text-align: right;
+      outline: none;
+    }
+
+    .setting-input:focus {
+      border-color: var(--accent);
+    }
+
+    .toggle {
+      position: relative;
+      width: 44px;
+      height: 24px;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    .toggle input {
+      opacity: 0;
+      position: absolute;
+    }
+
+    .toggle-track {
+      width: 100%;
+      height: 100%;
+      background: var(--bg4);
+      border-radius: 12px;
+      transition: background var(--transition);
+      border: 1px solid var(--border2);
+    }
+
+    .toggle-thumb {
+      position: absolute;
+      top: 3px;
+      left: 3px;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: var(--text2);
+      transition: all var(--transition);
+    }
+
+    .toggle.on .toggle-track {
+      background: var(--accent);
+      border-color: var(--accent);
+    }
+
+    .toggle.on .toggle-thumb {
+      left: 23px;
+      background: #001520;
+    }
+
+    /* ===== HOME SCREEN ===== */
+    #screen-home {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      padding: 0;
+    }
+
+    .home-header {
+      width: 100%;
+      padding: 40px 24px 24px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      background: linear-gradient(180deg, rgba(0, 212, 255, 0.04) 0%, transparent 100%);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .logo-ring {
+      width: 80px;
+      height: 80px;
+      border: 2px solid var(--accent);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 14px;
+      position: relative;
+    }
+
+    .logo-ring::before {
+      content: '';
+      position: absolute;
+      inset: -6px;
+      border: 1px solid rgba(0, 212, 255, 0.2);
+      border-radius: 50%;
+    }
+
+    .logo-bolt {
+      font-size: 36px;
+    }
+
+    .logo-title {
+      font-size: 28px;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      background: linear-gradient(135deg, var(--accent), #7b9fff);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .logo-sub {
+      font-size: 13px;
+      color: var(--text2);
+      margin-top: 4px;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+
+    .status-pill {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--green-bg);
+      border: 1px solid rgba(0, 230, 118, 0.25);
+      border-radius: 20px;
+      padding: 5px 12px;
+      margin-top: 12px;
+      font-size: 12px;
+      color: var(--green);
+      font-weight: 600;
+    }
+
+    .status-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--green);
+      animation: pulse-dot 2s infinite;
+    }
+
+    @keyframes pulse-dot {
+
+      0%,
+      100% {
+        opacity: 1;
+        transform: scale(1);
+      }
+
+      50% {
+        opacity: 0.6;
+        transform: scale(0.8);
+      }
+    }
+
+    .home-nav {
+      width: 100%;
+      padding: 20px 20px 28px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      overflow-y: auto;
+      flex: 1;
+    }
+
+    .nav-btn {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 17px 20px;
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      cursor: pointer;
+      transition: all var(--transition);
+      text-align: left;
+    }
+
+    .nav-btn:hover {
+      border-color: var(--border2);
+      background: var(--bg3);
+      transform: translateX(3px);
+    }
+
+    .nav-btn:active {
+      transform: scale(0.98);
+    }
+
+    .nav-icon {
+      width: 46px;
+      height: 46px;
+      border-radius: 11px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      flex-shrink: 0;
+    }
+
+    .nav-text {
+      flex: 1;
+    }
+
+    .nav-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .nav-desc {
+      font-size: 12px;
+      color: var(--text2);
+      margin-top: 2px;
+    }
+
+    .nav-arrow {
+      color: var(--text3);
+      font-size: 18px;
+    }
+
+    /* ===== POWER GAUGE ===== */
+    .gauge-wrap {
+      display: flex;
+      justify-content: center;
+      padding: 8px 0 12px;
+    }
+
+    .gauge-svg {
+      overflow: visible;
+    }
+
+    /* ===== PROGRESS BAR ===== */
+    .prog-bar {
+      height: 6px;
+      background: var(--bg4);
+      border-radius: 3px;
+      margin-top: 8px;
+      overflow: hidden;
+    }
+
+    .prog-fill {
+      height: 100%;
+      border-radius: 3px;
+      transition: width 0.8s ease;
+    }
+
+    /* ===== MODAL / OVERLAY ===== */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.6);
+      z-index: 100;
+      display: flex;
+      align-items: flex-end;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity var(--transition);
+    }
+
+    .modal-overlay.open {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    .modal-sheet {
+      width: 100%;
+      background: var(--bg2);
+      border-top: 1px solid var(--border);
+      border-radius: 20px 20px 0 0;
+      padding: 20px;
+      transform: translateY(100%);
+      transition: transform var(--transition);
+    }
+
+    .modal-overlay.open .modal-sheet {
+      transform: translateY(0);
+    }
+
+    .modal-handle {
+      width: 36px;
+      height: 4px;
+      border-radius: 2px;
+      background: var(--border2);
+      margin: 0 auto 16px;
+    }
+
+    .modal-title {
+      font-size: 17px;
+      font-weight: 700;
+      margin-bottom: 16px;
+      color: var(--text);
+    }
+
+    .modal-input {
+      width: 100%;
+      background: var(--bg3);
+      border: 1px solid var(--border2);
+      border-radius: var(--radius-sm);
+      color: var(--text);
+      font-size: 15px;
+      padding: 12px 14px;
+      outline: none;
+      margin-bottom: 12px;
+    }
+
+    .modal-input:focus {
+      border-color: var(--accent);
+    }
+
+    .modal-row {
+      display: flex;
+      gap: 10px;
+    }
+
+    /* ===== SECTION TITLE ===== */
+    .section-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text2);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin: 16px 0 10px;
+    }
+
+    /* ===== TOAST ===== */
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      background: var(--bg3);
+      border: 1px solid var(--border2);
+      border-radius: var(--radius-sm);
+      padding: 10px 18px;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text);
+      z-index: 200;
+      transition: transform 0.3s ease;
+      white-space: nowrap;
+      box-shadow: var(--shadow);
+    }
+
+    .toast.show {
+      transform: translateX(-50%) translateY(0);
+    }
+
+    /* ===== CHART WRAPPER ===== */
+    .chart-wrap {
+      position: relative;
+      width: 100%;
+    }
+
+    /* ═══════════════════════════════════════════════════
+       DEMO NAVBAR — Aureon Volts Navigation System
+    ═══════════════════════════════════════════════════ */
+
+    /* Demo Mode Banner */
+    #demo-mode-banner {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 28px;
+      background: linear-gradient(90deg,
+          rgba(0, 207, 255, 0.12) 0%,
+          rgba(240, 165, 0, 0.08) 50%,
+          rgba(0, 207, 255, 0.12) 100%);
+      border-bottom: 1px solid rgba(0, 207, 255, 0.25);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      font-family: 'Share Tech Mono', 'Courier New', monospace;
+      font-size: 10px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: rgba(0, 207, 255, 0.8);
+      z-index: 9998;
+      pointer-events: none;
+    }
+
+    #demo-mode-banner .demo-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #00CFFF;
+      box-shadow: 0 0 6px #00CFFF;
+      animation: demoBlink 1.6s infinite;
+    }
+
+    @keyframes demoBlink {
+
+      0%,
+      100% {
+        opacity: 1
+      }
+
+      50% {
+        opacity: .3
+      }
+    }
+
+    /* Main Demo Navbar */
+    #demo-navbar {
+      position: fixed;
+      top: 28px;
+      left: 0;
+      right: 0;
+      height: 52px;
+      background: rgba(10, 14, 26, 0.92);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border-bottom: 1px solid rgba(0, 207, 255, 0.18);
+      display: flex;
+      align-items: center;
+      padding: 0 20px;
+      gap: 0;
+      z-index: 9997;
+      box-shadow: 0 2px 20px rgba(0, 0, 0, 0.4), 0 0 0 0 rgba(0, 207, 255, 0);
+    }
+
+    #demo-navbar::before {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: linear-gradient(90deg,
+          transparent 0%, rgba(0, 207, 255, 0.5) 30%,
+          rgba(240, 165, 0, 0.3) 70%, transparent 100%);
+    }
+
+    /* Logo in navbar */
+    .demo-nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      text-decoration: none;
+      flex-shrink: 0;
+      margin-right: 20px;
+    }
+
+    .demo-nav-logo img {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      border: 1px solid rgba(0, 207, 255, 0.4);
+      box-shadow: 0 0 8px rgba(0, 207, 255, 0.5);
+    }
+
+    .demo-nav-brand {
+      font-family: 'Rajdhani', 'Share Tech Mono', 'Arial Narrow', sans-serif;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 2.5px;
+      background: linear-gradient(90deg, #fff 30%, #F0A500);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    /* Nav divider */
+    .demo-nav-sep {
+      width: 1px;
+      height: 24px;
+      background: rgba(0, 207, 255, 0.15);
+      margin: 0 16px;
+      flex-shrink: 0;
+    }
+
+    /* Desktop nav links */
+    .demo-nav-links {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      flex: 1;
+    }
+
+    .demo-nav-link {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      padding: 5px 11px;
+      border-radius: 6px;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      font-family: inherit;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: rgba(143, 163, 192, 0.85);
+      text-decoration: none;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+
+    .demo-nav-link:hover {
+      color: #00CFFF;
+      background: rgba(0, 207, 255, 0.08);
+    }
+
+    .demo-nav-link svg {
+      width: 12px;
+      height: 12px;
+      opacity: 0.7;
+    }
+
+    /* Back button — primary CTA */
+    #demo-btn-back {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      padding: 7px 14px;
+      background: rgba(0, 207, 255, 0.08);
+      border: 1px solid rgba(0, 207, 255, 0.3);
+      border-radius: 8px;
+      cursor: pointer;
+      font-family: inherit;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: #00CFFF;
+      text-decoration: none;
+      transition: all 0.22s;
+      white-space: nowrap;
+      flex-shrink: 0;
+      animation: backGlow 4s infinite;
+    }
+
+    @keyframes backGlow {
+
+      0%,
+      100% {
+        border-color: rgba(0, 207, 255, .3);
+        box-shadow: none;
+      }
+
+      50% {
+        border-color: rgba(0, 207, 255, .7);
+        box-shadow: 0 0 12px rgba(0, 207, 255, .2);
+      }
+    }
+
+    #demo-btn-back:hover {
+      background: rgba(0, 207, 255, 0.16);
+      border-color: rgba(0, 207, 255, 0.8);
+      box-shadow: 0 0 18px rgba(0, 207, 255, 0.25);
+      transform: translateX(-2px);
+    }
+
+    #demo-btn-back svg {
+      width: 13px;
+      height: 13px;
+      flex-shrink: 0;
+    }
+
+    /* Exit button */
+    #demo-btn-exit {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      padding: 7px 14px;
+      margin-left: 8px;
+      background: rgba(240, 165, 0, 0.08);
+      border: 1px solid rgba(240, 165, 0, 0.3);
+      border-radius: 8px;
+      cursor: pointer;
+      font-family: inherit;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: #F0A500;
+      transition: all 0.22s;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    #demo-btn-exit:hover {
+      background: rgba(240, 165, 0, 0.15);
+      border-color: rgba(240, 165, 0, 0.8);
+      box-shadow: 0 0 18px rgba(240, 165, 0, 0.2);
+    }
+
+    #demo-btn-exit svg {
+      width: 13px;
+      height: 13px;
+      flex-shrink: 0;
+    }
+
+    /* Hamburger (mobile) */
+    #demo-hamburger {
+      display: none;
+      flex-direction: column;
+      gap: 4px;
+      padding: 6px;
+      margin-left: 8px;
+      background: rgba(0, 207, 255, 0.06);
+      border: 1px solid rgba(0, 207, 255, 0.2);
+      border-radius: 6px;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    #demo-hamburger span {
+      display: block;
+      width: 18px;
+      height: 2px;
+      background: #00CFFF;
+      border-radius: 1px;
+      transition: all 0.25s;
+    }
+
+    #demo-hamburger.open span:nth-child(1) {
+      transform: translateY(6px) rotate(45deg);
+    }
+
+    #demo-hamburger.open span:nth-child(2) {
+      opacity: 0;
+    }
+
+    #demo-hamburger.open span:nth-child(3) {
+      transform: translateY(-6px) rotate(-45deg);
+    }
+
+    /* Mobile drawer */
+    #demo-mobile-menu {
+      display: none;
+      position: fixed;
+      top: 80px;
+      left: 0;
+      right: 0;
+      background: rgba(8, 12, 22, 0.97);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid rgba(0, 207, 255, 0.2);
+      flex-direction: column;
+      padding: 16px 20px 20px;
+      gap: 8px;
+      z-index: 9996;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+    }
+
+    #demo-mobile-menu.open {
+      display: flex;
+    }
+
+    .demo-mobile-link {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 11px 14px;
+      border-radius: 8px;
+      background: rgba(0, 207, 255, 0.04);
+      border: 1px solid rgba(0, 207, 255, 0.1);
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: rgba(143, 163, 192, 0.9);
+      text-decoration: none;
+      cursor: pointer;
+      font-family: inherit;
+      transition: all 0.2s;
+    }
+
+    .demo-mobile-link:hover,
+    .demo-mobile-link:active {
+      color: #00CFFF;
+      background: rgba(0, 207, 255, 0.1);
+      border-color: rgba(0, 207, 255, 0.3);
+    }
+
+    .demo-mobile-link.back-link {
+      color: #00CFFF;
+      background: rgba(0, 207, 255, 0.08);
+      border-color: rgba(0, 207, 255, 0.3);
+    }
+
+    .demo-mobile-link.exit-link {
+      color: #F0A500;
+      background: rgba(240, 165, 0, 0.08);
+      border-color: rgba(240, 165, 0, 0.3);
+    }
+
+    .demo-mobile-sep {
+      height: 1px;
+      background: rgba(0, 207, 255, 0.1);
+      margin: 4px 0;
+    }
+
+    .demo-mobile-link svg {
+      width: 15px;
+      height: 15px;
+      flex-shrink: 0;
+    }
+
+    /* Floating back button (always visible, bottom-right on mobile) */
+    #demo-float-back {
+      display: none;
+      position: fixed;
+      bottom: 80px;
+      right: 16px;
+      width: 46px;
+      height: 46px;
+      border-radius: 50%;
+      background: rgba(0, 207, 255, 0.12);
+      border: 1px solid rgba(0, 207, 255, 0.5);
+      color: #00CFFF;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      z-index: 9995;
+      box-shadow: 0 0 20px rgba(0, 207, 255, 0.3), 0 4px 12px rgba(0, 0, 0, 0.4);
+      transition: all 0.2s;
+      animation: floatPulse 3s infinite;
+    }
+
+    #demo-float-back svg {
+      width: 18px;
+      height: 18px;
+    }
+
+    @keyframes floatPulse {
+
+      0%,
+      100% {
+        box-shadow: 0 0 12px rgba(0, 207, 255, .3), 0 4px 12px rgba(0, 0, 0, .4);
+      }
+
+      50% {
+        box-shadow: 0 0 24px rgba(0, 207, 255, .6), 0 4px 12px rgba(0, 0, 0, .4);
+      }
+    }
+
+    #demo-float-back:active {
+      transform: scale(0.92);
+    }
+
+    /* Push app content down to clear the demo bars */
+    #app {
+      padding-top: 80px !important;
+      /* <--- Use padding em vez de margin para não deslocar a caixa inteira */
+      min-height: 100vh !important;
+      height: auto !important;
+    }
+
+    /* Responsive breakpoints */
+    @media (max-width: 768px) {
+      .demo-nav-links {
+        display: none;
+      }
+
+      .demo-nav-sep {
+        display: none;
+      }
+
+      #demo-btn-back {
+        display: none;
+      }
+
+      #demo-btn-exit {
+        display: none;
+      }
+
+      #demo-hamburger {
+        display: flex;
+      }
+
+      #demo-float-back {
+        display: flex;
+      }
+
+      .demo-nav-brand {
+        font-size: 11px;
+        letter-spacing: 1.5px;
+      }
+    }
+
+    @media (max-width: 400px) {
+      #demo-navbar {
+        padding: 0 12px;
+      }
+
+      .demo-nav-logo img {
+        width: 24px;
+        height: 24px;
+      }
+    }
+
+    /* ===== LIVE INDICATOR ===== */
+    .live-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--red);
+      letter-spacing: 0.05em;
+    }
+
+    .live-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--red);
+      animation: pulse-dot 1.2s infinite;
+    }
+
+    /* ===== DIVIDER ===== */
+    .divider {
+      height: 1px;
+      background: var(--border);
+      margin: 4px 0 16px;
+    }
+
+    /* ===== GRID LARGE ===== */
+    .metric-grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .metric-card-sm {
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 10px;
+      text-align: center;
+    }
+
+    .metric-card-sm .metric-value {
+      font-size: 18px;
+    }
+
+    .metric-card-sm .metric-label {
+      text-align: center;
+    }
+
+    .logo-img {
+      width: 72px;
+      height: 72px;
+      object-fit: contain;
+    }
+
+
+    /* ===== CIRCUIT NUMBER ===== */
+    .circ-number {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 22px;
+      height: 22px;
+      border-radius: 6px;
+      background: var(--accent-glow);
+      border: 1px solid rgba(0, 212, 255, 0.3);
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--accent);
+      flex-shrink: 0;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- ═══════════════════════════════════════════════════
+       DEMO NAVIGATION SYSTEM — Aureon Volts
+  ═══════════════════════════════════════════════════ -->
+
+  <!-- 1. Demo mode banner (top strip) -->
+  <div id="demo-mode-banner">
+    <div class="demo-dot"></div>
+    ⚡ Modo Demonstração — VoltEye X
+    <div class="demo-dot"></div>
+  </div>
+
+  <!-- 2. Main demo navbar -->
+  <nav id="demo-navbar">
+
+    <!-- Logo -->
+    <a href="index.html" class="demo-nav-logo" title="Voltar ao site Aureon Volts">
+      <img src="https://i.ibb.co/FkwXsfLT/image.png" alt="Aureon Volts">
+      <span class="demo-nav-brand">Aureon&nbsp;Volts</span>
+    </a>
+
+    <div class="demo-nav-sep"></div>
+
+    <!-- Desktop links -->
+    <div class="demo-nav-links">
+      <a href="index.html" class="demo-nav-link">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z" />
+          <polyline points="9 22 9 12 15 12 15 22" />
+        </svg>
+        Início
+      </a>
+      <a href="produtos.html" class="demo-nav-link">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <rect x="2" y="3" width="20" height="14" rx="2" />
+          <line x1="8" y1="21" x2="16" y2="21" />
+          <line x1="12" y1="17" x2="12" y2="21" />
+        </svg>
+        Produtos
+      </a>
+      <a href="empresa.html" class="demo-nav-link">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" />
+          <circle cx="9" cy="7" r="4" />
+          <path d="M23 21v-2a4 4 0 00-3-3.87" />
+          <path d="M16 3.13a4 4 0 010 7.75" />
+        </svg>
+        Empresa
+      </a>
+      <a href="contato.html" class="demo-nav-link">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+          <polyline points="22,6 12,13 2,6" />
+        </svg>
+        Contato
+      </a>
+    </div>
+
+    <!-- Back button -->
+    <a id="demo-btn-back" href="index.html" onclick="exitDemo('home')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+        <polyline points="15 18 9 12 15 6" />
+      </svg>
+      ← Voltar para Aureon Volts
+    </a>
+
+    <!-- Exit demo button -->
+    <button id="demo-btn-exit" onclick="exitDemo('produtos')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+        <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4" />
+        <polyline points="16 17 21 12 16 7" />
+        <line x1="21" y1="12" x2="9" y2="12" />
+      </svg>
+      Encerrar Demonstração
+    </button>
+
+    <!-- Hamburger (mobile) -->
+    <button id="demo-hamburger" onclick="toggleDemoMenu()" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+
+  </nav>
+
+  <!-- 3. Mobile drawer -->
+  <div id="demo-mobile-menu">
+    <a class="demo-mobile-link back-link" href="index.html" onclick="exitDemo('home')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+        <polyline points="15 18 9 12 15 6" />
+      </svg>
+      ← Voltar para Aureon Volts
+    </a>
+    <div class="demo-mobile-sep"></div>
+    <a class="demo-mobile-link" href="index.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+        <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z" />
+        <polyline points="9 22 9 12 15 12 15 22" />
+      </svg>
+      Site Principal
+    </a>
+    <a class="demo-mobile-link" href="produtos.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+        <rect x="2" y="3" width="20" height="14" rx="2" />
+        <line x1="8" y1="21" x2="16" y2="21" />
+        <line x1="12" y1="17" x2="12" y2="21" />
+      </svg>
+      Produtos
+    </a>
+    <a class="demo-mobile-link" href="empresa.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+        <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" />
+        <circle cx="9" cy="7" r="4" />
+      </svg>
+      Empresa
+    </a>
+    <a class="demo-mobile-link" href="contato.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+        <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+        <polyline points="22,6 12,13 2,6" />
+      </svg>
+      Contato
+    </a>
+    <div class="demo-mobile-sep"></div>
+    <button class="demo-mobile-link exit-link" onclick="exitDemo('produtos')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+        <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4" />
+        <polyline points="16 17 21 12 16 7" />
+        <line x1="21" y1="12" x2="9" y2="12" />
+      </svg>
+      Encerrar Demonstração
+    </button>
+  </div>
+
+  <!-- 4. Floating back button (mobile safety net) -->
+  <button id="demo-float-back" onclick="exitDemo('home')" title="Voltar para Aureon Volts">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+      <polyline points="15 18 9 12 15 6" />
+    </svg>
+  </button>
+
+  <!-- ═══════════════════════════════════════════════════ -->
+
+  <div id="app">
+
+    <!-- ==============================
+       SCREEN: HOME
+  ============================== -->
+    <div class="screen active" id="screen-home">
+      <div class="home-header">
+        <div class="logo-ring">
+          <img src="https://i.ibb.co/Csp9CF32/imagem-2026-06-16-161133298.png" alt="Aureon Volts" class="logo-img">
+        </div>
+        <div class="logo-title"> VoltEye X</div>
+        <div class="logo-sub"> Monitor Inteligente de Energia</div>
+        <div class="status-pill">
+          <span class="status-dot"></span>
+          Sistema Online · <span id="home-circuits-count">5</span> circuitos
+        </div>
+      </div>
+      <div class="home-nav">
+        <!-- Quick stats -->
+        <div class="metric-grid" style="margin-bottom: 4px;">
+          <div class="metric-card accent">
+            <div class="metric-label">⚡ Potência Total</div>
+            <div class="metric-value"><span id="home-power">0</span><span class="metric-unit">W</span></div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-label">📅 Conta Estimada</div>
+            <div class="metric-value" style="font-size:18px;">R$<span id="home-bill">0</span></div>
+          </div>
+        </div>
+
+        <div class="nav-btn" onclick="goTo('consumo')">
+          <div class="nav-icon" style="background: rgba(0,212,255,0.1); color: var(--accent);">📊</div>
+          <div class="nav-text">
+            <div class="nav-title">Consumo Atual</div>
+            <div class="nav-desc">Potência, corrente e resumo geral</div>
+          </div>
+          <span class="nav-arrow">›</span>
+        </div>
+        <div class="nav-btn" onclick="goTo('circuitos')">
+          <div class="nav-icon" style="background: rgba(123,159,255,0.1); color:#7b9fff;">🔌</div>
+          <div class="nav-text">
+            <div class="nav-title">Circuitos</div>
+            <div class="nav-desc">Monitorar circuitos individualmente</div>
+          </div>
+          <span class="nav-arrow">›</span>
+        </div>
+        <div class="nav-btn" onclick="goTo('historico')">
+          <div class="nav-icon" style="background: rgba(0,230,118,0.1); color: var(--green);">📈</div>
+          <div class="nav-text">
+            <div class="nav-title">Histórico</div>
+            <div class="nav-desc">Gráficos e análise de consumo</div>
+          </div>
+          <span class="nav-arrow">›</span>
+        </div>
+        <div class="nav-btn" onclick="goTo('alertas')" style="position:relative;">
+          <div class="nav-icon" style="background: rgba(255,82,82,0.1); color: var(--red);">🔔</div>
+          <div class="nav-text">
+            <div class="nav-title">Alertas</div>
+            <div class="nav-desc">Notificações e avisos do sistema</div>
+          </div>
+          <div id="alert-badge"
+            style="position:absolute;top:12px;right:42px;background:var(--red);color:#fff;border-radius:10px;font-size:11px;font-weight:700;padding:2px 7px;">
+            3</div>
+          <span class="nav-arrow">›</span>
+        </div>
+        <div class="nav-btn" onclick="goTo('config')">
+          <div class="nav-icon" style="background: rgba(255,202,40,0.1); color: var(--yellow);">⚙️</div>
+          <div class="nav-text">
+            <div class="nav-title">Configurações</div>
+            <div class="nav-desc">Tarifa, limites e preferências</div>
+          </div>
+          <span class="nav-arrow">›</span>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- ==============================
+       SCREEN: CONSUMO ATUAL
+  ============================== -->
+    <div class="screen" id="screen-consumo">
+      <div class="header">
+        <div class="header-back" onclick="goBack()">‹</div>
+        <div>
+          <div class="header-title">Consumo Atual</div>
+          <div class="header-sub">Atualizado em tempo real</div>
+        </div>
+        <div class="live-badge" style="margin-left:auto;"><span class="live-dot"></span>AO VIVO</div>
+      </div>
+      <div class="scroll-body">
+        <!-- Power gauge -->
+        <div class="card" style="text-align:center;">
+          <div class="card-label">Potência Instantânea</div>
+          <div class="gauge-wrap">
+            <canvas id="gaugeCanvas" width="220" height="130"></canvas>
+          </div>
+          <div style="font-size:36px;font-weight:800;color:var(--accent);margin:-10px 0 4px;">
+            <span id="c-power">0</span><span style="font-size:18px;color:var(--text2);"> W</span>
+          </div>
+          <div style="font-size:13px;color:var(--text2);">Corrente total: <b id="c-current">0.0</b> A</div>
+        </div>
+
+        <div class="metric-grid">
+          <div class="metric-card">
+            <div class="metric-label">⚡ Tensão</div>
+            <div class="metric-value"><span id="c-voltage">220</span><span class="metric-unit">V</span></div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-label">📊 Fator Potência</div>
+            <div class="metric-value"><span id="c-pf">0.92</span></div>
+          </div>
+          <div class="metric-card accent">
+            <div class="metric-label">📅 Consumo Hoje</div>
+            <div class="metric-value"><span id="c-day">0.0</span><span class="metric-unit">kWh</span></div>
+          </div>
+          <div class="metric-card accent">
+            <div class="metric-label">🗓️ Consumo Mês</div>
+            <div class="metric-value"><span id="c-month">0</span><span class="metric-unit">kWh</span></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-label">Conta de Luz Estimada</div>
+          <div style="display:flex;align-items:baseline;gap:6px;margin-bottom:10px;">
+            <span style="font-size:32px;font-weight:800;color:var(--text);">R$<span id="c-bill">0</span></span>
+            <span style="font-size:13px;color:var(--text2);">este mês</span>
+          </div>
+          <div class="prog-bar">
+            <div class="prog-fill" id="bill-progress" style="width:0%;background:var(--accent);"></div>
+          </div>
+          <div style="display:flex;justify-content:space-between;margin-top:6px;font-size:11px;color:var(--text3);">
+            <span>R$0</span><span>Meta: R$<span id="bill-goal">300</span></span>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-label">Resumo da Instalação</div>
+          <div class="detail-row">
+            <span class="detail-row-label">Circuitos monitorados</span>
+            <span class="detail-row-value" id="c-circ-count">5</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-row-label">Status geral</span>
+            <span id="c-status-badge"><span class="badge normal"><span class="badge-dot"></span>Normal</span></span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-row-label">Tarifa atual</span>
+            <span class="detail-row-value">R$<span id="c-tariff">0.85</span>/kWh</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-row-label">Frequência</span>
+            <span class="detail-row-value">60 Hz</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==============================
+       SCREEN: CIRCUITOS
+  ============================== -->
+    <div class="screen" id="screen-circuitos">
+      <div class="header">
+        <div class="header-back" onclick="goBack()">‹</div>
+        <div>
+          <div class="header-title">Circuitos</div>
+          <div class="header-sub" id="circ-header-sub">5 circuitos monitorados</div>
+        </div>
+      </div>
+      <div class="scroll-body">
+        <div id="circuit-list"></div>
+        <button class="btn btn-primary" onclick="openAddCircuit()" style="margin-top:4px;">
+          ＋ Adicionar Circuito
+        </button>
+      </div>
+    </div>
+
+    <!-- ==============================
+       SCREEN: DETALHE CIRCUITO
+  ============================== -->
+    <div class="screen" id="screen-detail">
+      <div class="header">
+        <div class="header-back" onclick="goBack()">‹</div>
+        <div>
+          <div class="header-title" id="detail-title">Circuito</div>
+          <div class="header-sub" id="detail-sub">Circuito #1</div>
+        </div>
+        <div id="detail-status-badge" style="margin-left:auto;"></div>
+      </div>
+      <div class="scroll-body">
+        <div class="card">
+          <div class="card-label">Medições em Tempo Real</div>
+          <div class="metric-grid" style="margin-bottom:0;">
+            <div class="metric-card accent">
+              <div class="metric-label">⚡ Tensão</div>
+              <div class="metric-value"><span id="d-voltage">220</span><span class="metric-unit">V</span></div>
+            </div>
+            <div class="metric-card accent">
+              <div class="metric-label">〜 Corrente</div>
+              <div class="metric-value"><span id="d-current">0</span><span class="metric-unit">A</span></div>
+            </div>
+            <div class="metric-card accent" style="grid-column:span 2;">
+              <div class="metric-label">💡 Potência</div>
+              <div class="metric-value" style="font-size:28px;"><span id="d-power">0</span><span
+                  class="metric-unit">W</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="metric-grid">
+          <div class="metric-card">
+            <div class="metric-label">📅 Hoje</div>
+            <div class="metric-value"><span id="d-day">0</span><span class="metric-unit">kWh</span></div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-label">🗓️ Este Mês</div>
+            <div class="metric-value"><span id="d-month">0</span><span class="metric-unit">kWh</span></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-label">Informações do Circuito</div>
+          <div class="detail-row">
+            <span class="detail-row-label">Número do circuito</span>
+            <span class="detail-row-value" id="d-number">#1</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-row-label">Disjuntor</span>
+            <span class="detail-row-value" id="d-breaker">20 A</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-row-label">Carga (%)</span>
+            <span class="detail-row-value" id="d-load">0%</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-row-label">Status</span>
+            <span id="d-status-row"></span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-row-label">Custo estimado mês</span>
+            <span class="detail-row-value" style="color:var(--accent);">R$<span id="d-cost">0</span></span>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-label">Carga do Disjuntor</div>
+          <div class="prog-bar" style="height:10px;">
+            <div class="prog-fill" id="d-load-bar" style="width:0%;background:var(--green);"></div>
+          </div>
+          <div style="display:flex;justify-content:space-between;margin-top:8px;font-size:12px;color:var(--text2);">
+            <span>0 A</span>
+            <span id="d-load-label">0 / 20 A</span>
+            <span id="d-breaker-max">20 A</span>
+          </div>
+        </div>
+
+        <button class="btn btn-secondary" onclick="editCircuit(currentCircuit)" style="margin-top:4px;">
+          ✏️ Editar Circuito
+        </button>
+      </div>
+    </div>
+
+    <!-- ==============================
+       SCREEN: ALERTAS
+  ============================== -->
+    <div class="screen" id="screen-alertas">
+      <div class="header">
+        <div class="header-back" onclick="goBack()">‹</div>
+        <div>
+          <div class="header-title">Alertas</div>
+          <div class="header-sub">Notificações do sistema</div>
+        </div>
+      </div>
+      <div class="scroll-body">
+        <div class="tab-row">
+          <button class="tab-btn active" onclick="filterAlerts('todos', this)">Todos</button>
+          <button class="tab-btn" onclick="filterAlerts('critico', this)">🔴 Crítico</button>
+          <button class="tab-btn" onclick="filterAlerts('atencao', this)">🟡 Atenção</button>
+          <button class="tab-btn" onclick="filterAlerts('info', this)">🔵 Info</button>
+        </div>
+        <div id="alert-list"></div>
+      </div>
+    </div>
+
+    <!-- ==============================
+       SCREEN: HISTÓRICO
+  ============================== -->
+    <div class="screen" id="screen-historico">
+      <div class="header">
+        <div class="header-back" onclick="goBack()">‹</div>
+        <div>
+          <div class="header-title">Histórico</div>
+          <div class="header-sub">Análise de consumo</div>
+        </div>
+      </div>
+      <div class="scroll-body">
+        <div class="tab-row" id="hist-tabs">
+          <button class="tab-btn active" onclick="switchHistTab('diario', this)">Diário</button>
+          <button class="tab-btn" onclick="switchHistTab('semanal', this)">Semanal</button>
+          <button class="tab-btn" onclick="switchHistTab('mensal', this)">Mensal</button>
+          <button class="tab-btn" onclick="switchHistTab('circuitos', this)">Por Circuito</button>
+          <button class="tab-btn" onclick="switchHistTab('conta', this)">Conta</button>
+        </div>
+        <div class="card">
+          <div class="card-label" id="hist-chart-label">Consumo Diário (kWh)</div>
+          <div class="chart-wrap" style="height:220px;">
+            <canvas id="histChart" role="img" aria-label="Gráfico de consumo histórico">Dados de consumo
+              histórico</canvas>
+          </div>
+        </div>
+        <div id="hist-summary"></div>
+      </div>
+    </div>
+
+    <!-- ==============================
+       SCREEN: CONFIGURAÇÕES
+  ============================== -->
+    <div class="screen" id="screen-config">
+      <div class="header">
+        <div class="header-back" onclick="goBack()">‹</div>
+        <div>
+          <div class="header-title">Configurações</div>
+          <div class="header-sub">Parâmetros do sistema</div>
+        </div>
+      </div>
+      <div class="scroll-body">
+        <div class="section-title">Tarifas e Limites</div>
+        <div class="card">
+          <div class="setting-row">
+            <div>
+              <div class="setting-label">Tarifa (R$/kWh)</div>
+              <div class="setting-sub">Tarifa da concessionária</div>
+            </div>
+            <input class="setting-input" type="number" id="cfg-tariff" value="0.85" step="0.01"
+              onchange="updateTariff(this.value)">
+          </div>
+          <div class="setting-row">
+            <div>
+              <div class="setting-label">Meta de Consumo</div>
+              <div class="setting-sub">Limite mensal em R$</div>
+            </div>
+            <input class="setting-input" type="number" id="cfg-goal" value="300" onchange="updateGoal(this.value)">
+          </div>
+          <div class="setting-row">
+            <div>
+              <div class="setting-label">Limite Atenção</div>
+              <div class="setting-sub">% da capacidade do disjuntor</div>
+            </div>
+            <input class="setting-input" type="number" id="cfg-warn" value="80" onchange="updateWarnLevel(this.value)">
+          </div>
+        </div>
+
+        <div class="section-title">Aparência</div>
+        <div class="card">
+          <div class="setting-row">
+            <div>
+              <div class="setting-label">Tema Claro</div>
+              <div class="setting-sub" id="theme-state-text">Tema claro desativado</div>
+            </div>
+            <div class="toggle" id="theme-toggle" onclick="toggleTheme()" role="switch" aria-checked="false" aria-label="Ativar tema claro">
+              <div class="toggle-track"></div>
+              <div class="toggle-thumb"></div>
+            </div>
+          </div>
+          <div class="setting-row">
+            <div>
+              <div class="setting-label">Atualização em tempo real</div>
+              <div class="setting-sub">Simulação de dados ao vivo</div>
+            </div>
+            <div class="toggle on" id="live-toggle" onclick="toggleLive()">
+              <div class="toggle-track"></div>
+              <div class="toggle-thumb"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="section-title">Circuitos</div>
+        <div id="cfg-circuit-list"></div>
+
+        <div class="section-title">Sistema</div>
+        <div class="card">
+          <div class="detail-row">
+            <span class="detail-row-label">Versão do firmware</span>
+            <span class="detail-row-value">v2.4.1</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-row-label">Modelo</span>
+            <span class="detail-row-value">AV-Pro 3.0</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-row-label">Conexão Wi-Fi</span>
+            <span class="badge info" style="font-size:11px;"><span class="badge-dot"></span>Conectado</span>
+          </div>
+        </div>
+
+        <button class="btn btn-danger" onclick="showToast('Configurações redefinidas')" style="margin-top:8px;">
+          🔄 Redefinir Configurações
+        </button>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ==============================
+     MODAL: ADD/EDIT CIRCUIT
+============================== -->
+  <div class="modal-overlay" id="modal-circuit">
+    <div class="modal-sheet">
+      <div class="modal-handle"></div>
+      <div class="modal-title" id="modal-circuit-title">Adicionar Circuito</div>
+      <label style="font-size:13px;color:var(--text2);margin-bottom:5px;display:block;">Nome do circuito</label>
+      <input class="modal-input" id="modal-name" type="text" placeholder="Ex: Quarto Principal">
+      <label style="font-size:13px;color:var(--text2);margin-bottom:5px;display:block;">Número</label>
+      <input class="modal-input" id="modal-number" type="number" placeholder="Ex: 6">
+      <label style="font-size:13px;color:var(--text2);margin-bottom:5px;display:block;">Capacidade do disjuntor
+        (A)</label>
+      <input class="modal-input" id="modal-breaker" type="number" placeholder="Ex: 20" value="20">
+      <div class="modal-row">
+        <button class="btn btn-secondary" onclick="closeModal()" style="flex:1;">Cancelar</button>
+        <button class="btn btn-primary" onclick="saveCircuit()" style="flex:1;">Salvar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div class="toast" id="toast"></div>
+
+  <script>
+    /* =====================================================
+       DATA & STATE
+    ===================================================== */
+    let appState = {
+      tariff: 0.85,
+      goal: 300,
+      warnLevel: 80,
+      liveUpdate: true,
+      theme: 'dark',
+      currentScreen: 'home',
+      screenStack: [],
+      editingCircuitId: null,
+      currentTab: 'diario',
+    };
+
+    let circuits = [
+      { id: 1, name: 'Chuveiro', number: 1, icon: '🚿', breaker: 25, voltage: 220, baseCurrent: 9.1, powerBase: 2000, dayKwh: 8.5, monthKwh: 95 },
+      { id: 2, name: 'Ar Condicionado', number: 2, icon: '❄️', breaker: 20, voltage: 220, baseCurrent: 7.5, powerBase: 1650, dayKwh: 6.2, monthKwh: 72 },
+      { id: 3, name: 'Tomadas da Sala', number: 3, icon: '🔌', breaker: 16, voltage: 127, baseCurrent: 4.2, powerBase: 534, dayKwh: 2.1, monthKwh: 28 },
+      { id: 4, name: 'Iluminação', number: 4, icon: '💡', breaker: 10, voltage: 127, baseCurrent: 1.8, powerBase: 229, dayKwh: 1.4, monthKwh: 18 },
+      { id: 5, name: 'Cozinha', number: 5, icon: '🍳', breaker: 20, voltage: 127, baseCurrent: 6.8, powerBase: 864, dayKwh: 3.5, monthKwh: 44 },
+    ];
+
+    let alertsData = [
+      { id: 1, type: 'critico', icon: '⚡', title: 'Sobrecarga detectada', desc: 'Chuveiro atingiu 108% da capacidade do disjuntor (27/25 A).', time: 'Há 5 min', read: false },
+      { id: 2, type: 'atencao', icon: '⚠️', title: 'Consumo excessivo', desc: 'Ar Condicionado com consumo 35% acima do padrão mensal.', time: 'Há 22 min', read: false },
+      { id: 3, type: 'atencao', icon: '📉', title: 'Queda de tensão', desc: 'Tensão na rede registrou 197V — abaixo do limite de 200V.', time: 'Há 1h', read: false },
+      { id: 4, type: 'info', icon: '🔵', title: 'Circuito desligado', desc: 'Tomadas da Sala sem consumo detectado por mais de 2 horas.', time: 'Há 3h', read: true },
+      { id: 5, type: 'info', icon: '✅', title: 'Sistema estável', desc: 'Todos os circuitos operando dentro dos parâmetros normais.', time: 'Há 6h', read: true },
+    ];
+
+    /* =====================================================
+       LIVE SIMULATION
+    ===================================================== */
+    let liveTimer = null;
+    let histChart = null;
+
+    function getCircuitLive(c) {
+      const jitter = () => (Math.random() - 0.5) * 0.3;
+      const current = parseFloat((c.baseCurrent * (0.85 + Math.random() * 0.3) + jitter()).toFixed(2));
+      const power = Math.round(c.voltage * current * 0.92);
+      const loadPct = Math.round((current / c.breaker) * 100);
+      let status = 'normal';
+      if (current > c.breaker) status = 'critico';
+      else if (current > c.breaker * (appState.warnLevel / 100)) status = 'atencao';
+      return { current, power, loadPct, status, voltage: c.voltage + Math.round((Math.random() - 0.5) * 4) };
+    }
+
+    function startLive() {
+      if (liveTimer) clearInterval(liveTimer);
+      liveTimer = setInterval(updateLive, 2000);
+      updateLive();
+    }
+
+    function stopLive() {
+      if (liveTimer) { clearInterval(liveTimer); liveTimer = null; }
+    }
+
+    function updateLive() {
+      if (!appState.liveUpdate) return;
+
+      // Compute totals
+      let totalPower = 0, totalCurrent = 0;
+      circuits.forEach(c => {
+        const live = getCircuitLive(c);
+        c._live = live;
+        totalPower += live.power;
+        totalCurrent += live.current;
+      });
+
+      const monthKwh = circuits.reduce((a, c) => a + c.monthKwh, 0);
+      const dayKwh = circuits.reduce((a, c) => a + c.dayKwh, 0);
+      const bill = (monthKwh * appState.tariff).toFixed(2);
+
+      // Update home
+      setEl('home-power', totalPower.toLocaleString('pt-BR'));
+      setEl('home-bill', bill);
+      setEl('home-circuits-count', circuits.length);
+
+      // Update consumo screen
+      setEl('c-power', totalPower.toLocaleString('pt-BR'));
+      setEl('c-current', totalCurrent.toFixed(1));
+      setEl('c-voltage', '220');
+      setEl('c-day', dayKwh.toFixed(1));
+      setEl('c-month', monthKwh.toFixed(0));
+      setEl('c-bill', bill);
+      setEl('c-circ-count', circuits.length);
+      setEl('c-tariff', appState.tariff.toFixed(2));
+      setEl('c-pf', (0.88 + Math.random() * 0.08).toFixed(2));
+
+      const billPct = Math.min(100, (parseFloat(bill) / appState.goal) * 100);
+      const bpEl = document.getElementById('bill-progress');
+      if (bpEl) bpEl.style.width = billPct + '%';
+      setEl('bill-goal', appState.goal);
+
+      const worstStatus = circuits.some(c => c._live?.status === 'critico') ? 'critico'
+        : circuits.some(c => c._live?.status === 'atencao') ? 'atencao' : 'normal';
+      const csBadge = document.getElementById('c-status-badge');
+      if (csBadge) csBadge.innerHTML = statusBadge(worstStatus);
+
+      // Update gauge
+      drawGauge(totalPower, 8000);
+
+      // Refresh circuit list if visible
+      if (appState.currentScreen === 'circuitos') renderCircuitList();
+    }
+
+    function setEl(id, val) {
+      const el = document.getElementById(id);
+      if (el) el.textContent = val;
+    }
+
+    /* =====================================================
+       GAUGE CANVAS
+    ===================================================== */
+    function drawGauge(value, max) {
+      const canvas = document.getElementById('gaugeCanvas');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      const W = canvas.width, H = canvas.height;
+      ctx.clearRect(0, 0, W, H);
+
+      const cx = W / 2, cy = H - 10;
+      const r = 90, startAngle = Math.PI, endAngle = 2 * Math.PI;
+      const pct = Math.min(1, value / max);
+
+      // Track bg
+      ctx.beginPath();
+      ctx.arc(cx, cy, r, startAngle, endAngle);
+      ctx.strokeStyle = 'rgba(255,255,255,0.08)';
+      ctx.lineWidth = 14;
+      ctx.lineCap = 'round';
+      ctx.stroke();
+
+      // Fill
+      const fillEnd = startAngle + (endAngle - startAngle) * pct;
+      const color = pct > 0.8 ? '#ff5252' : pct > 0.6 ? '#ffca28' : '#00d4ff';
+      ctx.beginPath();
+      ctx.arc(cx, cy, r, startAngle, fillEnd);
+      ctx.strokeStyle = color;
+      ctx.lineWidth = 14;
+      ctx.lineCap = 'round';
+      ctx.stroke();
+
+      // Tick marks
+      for (let i = 0; i <= 10; i++) {
+        const a = Math.PI + (i / 10) * Math.PI;
+        const inner = r - 18, outer = r - 8;
+        ctx.beginPath();
+        ctx.moveTo(cx + inner * Math.cos(a), cy + inner * Math.sin(a));
+        ctx.lineTo(cx + outer * Math.cos(a), cy + outer * Math.sin(a));
+        ctx.strokeStyle = 'rgba(255,255,255,0.15)';
+        ctx.lineWidth = 1.5;
+        ctx.stroke();
+      }
+
+      // Labels
+      ctx.font = '11px -apple-system,sans-serif';
+      ctx.fillStyle = 'rgba(255,255,255,0.3)';
+      ctx.textAlign = 'center';
+      ctx.fillText('0', cx - r + 2, cy + 16);
+      ctx.fillText('8kW', cx + r - 8, cy + 16);
+    }
+
+    /* =====================================================
+       NAVIGATION
+    ===================================================== */
+    let currentCircuit = null;
+
+    function goTo(screen, data) {
+      const current = document.getElementById('screen-' + appState.currentScreen);
+      const next = document.getElementById('screen-' + screen);
+      if (!next) return;
+
+      appState.screenStack.push(appState.currentScreen);
+      current.classList.add('slide-out');
+      setTimeout(() => { current.classList.remove('active', 'slide-out'); }, 250);
+      next.classList.add('active');
+      appState.currentScreen = screen;
+
+      if (screen === 'circuitos') renderCircuitList();
+      if (screen === 'detail' && data) openCircuitDetail(data);
+      if (screen === 'alertas') renderAlerts('todos');
+      if (screen === 'historico') renderHistorico();
+      if (screen === 'config') renderConfig();
+      if (screen === 'consumo') updateLive();
+    }
+
+    function goBack() {
+      const prev = appState.screenStack.pop();
+      if (!prev) return;
+      const current = document.getElementById('screen-' + appState.currentScreen);
+      const prevEl = document.getElementById('screen-' + prev);
+      current.classList.remove('active');
+      current.style.transform = 'translateX(30px)';
+      setTimeout(() => { current.style.transform = ''; }, 300);
+      prevEl.classList.add('active');
+      appState.currentScreen = prev;
+
+      if (prev === 'circuitos') renderCircuitList();
+      if (prev === 'home') updateLive();
+    }
+
+    /* =====================================================
+       CIRCUIT LIST
+    ===================================================== */
+    function statusBadge(status) {
+      if (status === 'critico') return '<span class="badge critical"><span class="badge-dot"></span>Crítico</span>';
+      if (status === 'atencao') return '<span class="badge warning"><span class="badge-dot"></span>Atenção</span>';
+      return '<span class="badge normal"><span class="badge-dot"></span>Normal</span>';
+    }
+
+    function renderCircuitList() {
+      const container = document.getElementById('circuit-list');
+      if (!container) return;
+      setEl('circ-header-sub', circuits.length + ' circuitos monitorados');
+      container.innerHTML = circuits.map(c => {
+        const live = c._live || getCircuitLive(c);
+        return `
+    <div class="circuit-item" onclick="goTo('detail', ${c.id})">
+      <div class="circuit-icon">${c.icon}</div>
+      <div class="circuit-info">
+        <div style="display:flex;align-items:center;gap:8px;">
+          <span class="circuit-name">${c.name}</span>
+          <span class="circ-number">${c.number}</span>
+        </div>
+        <div class="circuit-stats">${live.current.toFixed(1)} A · ${live.voltage} V · ${live.loadPct}% carga</div>
+      </div>
+      <div class="circuit-right">
+        <span class="circuit-power">${live.power.toLocaleString('pt-BR')} W</span>
+        ${statusBadge(live.status)}
+      </div>
+    </div>`;
+      }).join('');
+    }
+
+    /* =====================================================
+       CIRCUIT DETAIL
+    ===================================================== */
+    function openCircuitDetail(id) {
+      const c = circuits.find(x => x.id === id);
+      if (!c) return;
+      currentCircuit = id;
+      const live = c._live || getCircuitLive(c);
+      c._live = live;
+
+      setEl('detail-title', c.name);
+      setEl('detail-sub', 'Circuito #' + c.number);
+      setEl('d-voltage', live.voltage);
+      setEl('d-current', live.current.toFixed(1));
+      setEl('d-power', live.power.toLocaleString('pt-BR'));
+      setEl('d-day', c.dayKwh.toFixed(1));
+      setEl('d-month', c.monthKwh.toFixed(0));
+      setEl('d-number', '#' + c.number);
+      setEl('d-breaker', c.breaker + ' A');
+      setEl('d-load', live.loadPct + '%');
+      setEl('d-cost', (c.monthKwh * appState.tariff).toFixed(2));
+      setEl('d-load-label', live.current.toFixed(1) + ' / ' + c.breaker + ' A');
+      setEl('d-breaker-max', c.breaker + ' A');
+
+      const bar = document.getElementById('d-load-bar');
+      if (bar) {
+        bar.style.width = Math.min(100, live.loadPct) + '%';
+        bar.style.background = live.status === 'critico' ? 'var(--red)' : live.status === 'atencao' ? 'var(--yellow)' : 'var(--green)';
+      }
+      const dsr = document.getElementById('d-status-row');
+      if (dsr) dsr.innerHTML = statusBadge(live.status);
+      const dsb = document.getElementById('detail-status-badge');
+      if (dsb) dsb.innerHTML = statusBadge(live.status);
+    }
+
+    /* =====================================================
+       ADD / EDIT CIRCUIT
+    ===================================================== */
+    function openAddCircuit() {
+      appState.editingCircuitId = null;
+      document.getElementById('modal-circuit-title').textContent = 'Adicionar Circuito';
+      document.getElementById('modal-name').value = '';
+      document.getElementById('modal-number').value = circuits.length + 1;
+      document.getElementById('modal-breaker').value = 20;
+      document.getElementById('modal-circuit').classList.add('open');
+    }
+
+    function editCircuit(id) {
+      const c = circuits.find(x => x.id === id);
+      if (!c) return;
+      appState.editingCircuitId = id;
+      document.getElementById('modal-circuit-title').textContent = 'Editar Circuito';
+      document.getElementById('modal-name').value = c.name;
+      document.getElementById('modal-number').value = c.number;
+      document.getElementById('modal-breaker').value = c.breaker;
+      document.getElementById('modal-circuit').classList.add('open');
+    }
+
+    function closeModal() {
+      document.getElementById('modal-circuit').classList.remove('open');
+    }
+
+    const ICONS = ['💡', '🔌', '🚿', '❄️', '🍳', '📺', '🖥️', '🔧', '🏠', '⚡'];
+
+    function saveCircuit() {
+      const name = document.getElementById('modal-name').value.trim();
+      const number = parseInt(document.getElementById('modal-number').value) || (circuits.length + 1);
+      const breaker = parseInt(document.getElementById('modal-breaker').value) || 20;
+      if (!name) { showToast('Informe o nome do circuito'); return; }
+
+      if (appState.editingCircuitId) {
+        const c = circuits.find(x => x.id === appState.editingCircuitId);
+        if (c) { c.name = name; c.number = number; c.breaker = breaker; }
+        showToast('Circuito atualizado!');
+      } else {
+        const icon = ICONS[circuits.length % ICONS.length];
+        const baseCurrent = (Math.random() * 6 + 2).toFixed(1) * 1;
+        const voltage = breaker >= 25 ? 220 : 127;
+        circuits.push({
+          id: Date.now(), name, number, icon, breaker,
+          voltage, baseCurrent, powerBase: Math.round(voltage * baseCurrent * 0.92),
+          dayKwh: parseFloat((Math.random() * 4 + 0.5).toFixed(1)),
+          monthKwh: parseFloat((Math.random() * 50 + 10).toFixed(0)),
+        });
+        showToast('Circuito adicionado!');
+        setEl('home-circuits-count', circuits.length);
+      }
+      closeModal();
+      renderCircuitList();
+      if (appState.currentScreen === 'config') renderConfig();
+    }
+
+    /* =====================================================
+       ALERTS
+    ===================================================== */
+    function renderAlerts(filter) {
+      const container = document.getElementById('alert-list');
+      if (!container) return;
+      const filtered = filter === 'todos' ? alertsData : alertsData.filter(a => a.type === filter);
+      if (filtered.length === 0) {
+        container.innerHTML = '<div style="text-align:center;padding:40px 20px;color:var(--text2);font-size:14px;">Nenhum alerta nesta categoria.</div>';
+        return;
+      }
+      container.innerHTML = filtered.map(a => `
+    <div class="alert-item" style="${a.read ? 'opacity:0.6' : 'border-color:' + (a.type === 'critico' ? 'rgba(255,82,82,0.3)' : a.type === 'atencao' ? 'rgba(255,202,40,0.25)' : 'var(--border)')}">
+      <div class="alert-icon">${a.icon}</div>
+      <div>
+        <div class="alert-title">${a.title}</div>
+        <div class="alert-desc">${a.desc}</div>
+        <div class="alert-time">${a.time}${a.read ? ' · Lido' : ' · <b style="color:var(--accent)">Novo</b>'}</div>
+      </div>
+    </div>`).join('');
+    }
+
+    function filterAlerts(type, btn) {
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      renderAlerts(type);
+    }
+
+    /* =====================================================
+       HISTÓRICO
+    ===================================================== */
+    let histChartInstance = null;
+
+    function renderHistorico() {
+      setTimeout(() => switchHistTab(appState.currentTab || 'diario',
+        document.querySelector('#hist-tabs .tab-btn.active') ||
+        document.querySelector('#hist-tabs .tab-btn')), 100);
+    }
+
+    function switchHistTab(tab, btn) {
+      appState.currentTab = tab;
+      document.querySelectorAll('#hist-tabs .tab-btn').forEach(b => b.classList.remove('active'));
+      if (btn) btn.classList.add('active');
+
+      const label = {
+        diario: 'Consumo Diário (kWh)', semanal: 'Consumo Semanal (kWh)',
+        mensal: 'Consumo Mensal (kWh)', circuitos: 'Consumo por Circuito (kWh)', conta: 'Evolução da Conta (R$)'
+      };
+      setEl('hist-chart-label', label[tab]);
+
+      const canvas = document.getElementById('histChart');
+      if (!canvas) return;
+
+      if (histChartInstance) { histChartInstance.destroy(); histChartInstance = null; }
+
+      let labels, datasets, type = 'bar';
+      const primary = '#00d4ff', secondary = '#7b9fff', isDark = appState.theme === 'dark';
+      const gridColor = isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)';
+      const textColor = isDark ? '#8fa3c0' : '#4a6080';
+
+      if (tab === 'diario') {
+        labels = ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom'];
+        datasets = [{
+          label: 'Consumo (kWh)',
+          data: [18.2, 22.1, 20.4, 25.3, 19.8, 28.6, 24.1],
+          backgroundColor: 'rgba(0,212,255,0.5)',
+          borderColor: primary, borderWidth: 2, borderRadius: 6,
+        }];
+      } else if (tab === 'semanal') {
+        labels = ['S1', 'S2', 'S3', 'S4', 'S5'];
+        datasets = [{
+          label: 'Consumo (kWh)',
+          data: [142, 168, 153, 178, 161],
+          backgroundColor: 'rgba(123,159,255,0.5)',
+          borderColor: secondary, borderWidth: 2, borderRadius: 6,
+        }];
+      } else if (tab === 'mensal') {
+        labels = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
+        datasets = [{
+          label: 'Consumo (kWh)',
+          data: [310, 285, 320, 298, 340, 360, 375, 365, 342, 318, 295, 310],
+          backgroundColor: 'rgba(0,230,118,0.4)',
+          borderColor: '#00e676', borderWidth: 2, borderRadius: 6,
+        }];
+      } else if (tab === 'circuitos') {
+        labels = circuits.map(c => c.name);
+        datasets = [{
+          label: 'Consumo Mês (kWh)',
+          data: circuits.map(c => c.monthKwh),
+          backgroundColor: ['rgba(0,212,255,0.6)', 'rgba(123,159,255,0.6)', 'rgba(0,230,118,0.6)', 'rgba(255,202,40,0.6)', 'rgba(255,145,0,0.6)', ...circuits.slice(5).map(() => 'rgba(100,150,255,0.5)')],
+          borderRadius: 6,
+        }];
+      } else if (tab === 'conta') {
+        type = 'line';
+        labels = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
+        datasets = [{
+          label: 'Conta (R$)',
+          data: [263, 242, 272, 253, 289, 306, 319, 310, 291, 270, 251, 264],
+          borderColor: primary, backgroundColor: 'rgba(0,212,255,0.08)',
+          borderWidth: 2, pointRadius: 4, pointBackgroundColor: primary, fill: true,
+          tension: 0.4,
+        }];
+      }
+
+      histChartInstance = new Chart(canvas.getContext('2d'), {
+        type,
+        data: { labels, datasets },
+        options: {
+          responsive: true, maintainAspectRatio: false,
+          plugins: { legend: { display: false } },
+          scales: {
+            x: { grid: { color: gridColor }, ticks: { color: textColor, font: { size: 11 } } },
+            y: { grid: { color: gridColor }, ticks: { color: textColor, font: { size: 11 } } },
+          }
+        }
+      });
+
+      // Summary
+      const summaryEl = document.getElementById('hist-summary');
+      if (summaryEl && tab === 'mensal') {
+        summaryEl.innerHTML = `
+      <div class="metric-grid">
+        <div class="metric-card"><div class="metric-label">📊 Média Mensal</div><div class="metric-value">327<span class="metric-unit">kWh</span></div></div>
+        <div class="metric-card"><div class="metric-label">📈 Maior Mês</div><div class="metric-value">375<span class="metric-unit">kWh</span></div></div>
+      </div>`;
+      } else if (summaryEl) { summaryEl.innerHTML = ''; }
+    }
+
+    /* =====================================================
+       CONFIGURAÇÕES
+    ===================================================== */
+    function renderConfig() {
+      const container = document.getElementById('cfg-circuit-list');
+      if (!container) return;
+      container.innerHTML = circuits.map(c => `
+    <div class="card" style="margin-bottom:10px;">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
+        <span style="font-size:20px;">${c.icon}</span>
+        <span style="font-size:15px;font-weight:600;color:var(--text);">${c.name}</span>
+        <span class="circ-number" style="margin-left:auto;">${c.number}</span>
+      </div>
+      <button class="btn btn-secondary" onclick="editCircuit(${c.id})" style="padding:9px;font-size:13px;">
+        ✏️ Editar nome e número
+      </button>
+    </div>`).join('');
+    }
+
+    function updateTariff(val) {
+      appState.tariff = parseFloat(val) || 0.85;
+      showToast('Tarifa atualizada: R$' + appState.tariff.toFixed(2) + '/kWh');
+    }
+    function updateGoal(val) {
+      appState.goal = parseFloat(val) || 300;
+      showToast('Meta atualizada: R$' + appState.goal);
+    }
+    function updateWarnLevel(val) {
+      appState.warnLevel = parseInt(val) || 80;
+      showToast('Limite de atenção: ' + appState.warnLevel + '%');
+    }
+
+    function toggleTheme() {
+      const toggle = document.getElementById('theme-toggle');
+      const stateText = document.getElementById('theme-state-text');
+      appState.theme = appState.theme === 'dark' ? 'light' : 'dark';
+      const isLight = appState.theme === 'light';
+      toggle.classList.toggle('on', isLight);
+      toggle.setAttribute('aria-checked', String(isLight));
+      toggle.setAttribute('aria-label', isLight ? 'Desativar tema claro' : 'Ativar tema claro');
+      if (stateText) stateText.textContent = 'Tema claro ' + (isLight ? 'ativado' : 'desativado');
+      document.body.classList.toggle('light', isLight);
+      localStorage.setItem('volteye-theme', isLight ? 'light' : 'dark');
+      showToast('Tema claro ' + (isLight ? 'ativado' : 'desativado'));
+    }
+
+    function toggleLive() {
+      const toggle = document.getElementById('live-toggle');
+      appState.liveUpdate = !appState.liveUpdate;
+      toggle.classList.toggle('on', appState.liveUpdate);
+      if (appState.liveUpdate) { startLive(); showToast('Atualização em tempo real ativada'); }
+      else { showToast('Atualização pausada'); }
+    }
+
+    /* =====================================================
+       TOAST
+    ===================================================== */
+    let toastTimer = null;
+    function showToast(msg) {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.classList.add('show');
+      if (toastTimer) clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => t.classList.remove('show'), 2500);
+    }
+
+    /* =====================================================
+       CLOSE MODAL ON BACKDROP CLICK
+    ===================================================== */
+    document.getElementById('modal-circuit').addEventListener('click', function (e) {
+      if (e.target === this) closeModal();
+    });
+
+    /* =====================================================
+       DEMO NAVIGATION SYSTEM
+    ===================================================== */
+
+    /**
+     * exitDemo(destination)
+     * Gracefully closes the demo and redirects the user.
+     * destination: 'home' → aureonvolts.com | 'produtos' → /produtos.html
+     */
+    function exitDemo(destination) {
+      // Close mobile menu if open
+      closeDemoMenu();
+      // Show a brief toast then redirect
+      showToast(destination === 'produtos'
+        ? 'Encerrando demonstração…'
+        : 'Voltando para Aureon Volts…');
+      setTimeout(() => {
+        if (destination === 'produtos') {
+          window.location.href = 'produtos.html';
+        } else {
+          window.location.href = 'https://aureonvolts.com';
+        }
+      }, 600);
+    }
+
+    /** Toggle mobile hamburger drawer */
+    function toggleDemoMenu() {
+      const menu = document.getElementById('demo-mobile-menu');
+      const burger = document.getElementById('demo-hamburger');
+      const isOpen = menu.classList.toggle('open');
+      burger.classList.toggle('open', isOpen);
+      // Prevent body scroll while menu is open
+      document.body.style.overflow = isOpen ? 'hidden' : '';
+    }
+
+    /** Close mobile menu */
+    function closeDemoMenu() {
+      document.getElementById('demo-mobile-menu').classList.remove('open');
+      document.getElementById('demo-hamburger').classList.remove('open');
+      document.body.style.overflow = '';
+    }
+
+    // Close mobile menu when clicking outside
+    document.addEventListener('click', function (e) {
+      const menu = document.getElementById('demo-mobile-menu');
+      const burger = document.getElementById('demo-hamburger');
+      const navbar = document.getElementById('demo-navbar');
+      if (menu.classList.contains('open')
+        && !menu.contains(e.target)
+        && !burger.contains(e.target)
+        && !navbar.contains(e.target)) {
+        closeDemoMenu();
+      }
+    });
+
+    // Close mobile menu on link clicks inside the drawer
+    document.querySelectorAll('#demo-mobile-menu a, #demo-mobile-menu button').forEach(el => {
+      el.addEventListener('click', () => {
+        // Let each handler do its thing; close menu after short delay
+        setTimeout(closeDemoMenu, 150);
+      });
+    });
+
+    // Keyboard shortcut: Escape closes mobile menu
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') closeDemoMenu();
+    });
+
+    /* =====================================================
+       INIT
+    ===================================================== */
+    startLive();
+    renderCircuitList();
+  
+    (function initVoltEyeStoredTheme() {
+      const savedTheme = localStorage.getItem('volteye-theme');
+      if (savedTheme !== 'light') return;
+      appState.theme = 'light';
+      const toggle = document.getElementById('theme-toggle');
+      const stateText = document.getElementById('theme-state-text');
+      document.body.classList.add('light');
+      if (toggle) {
+        toggle.classList.add('on');
+        toggle.setAttribute('aria-checked', 'true');
+        toggle.setAttribute('aria-label', 'Desativar tema claro');
+      }
+      if (stateText) stateText.textContent = 'Tema claro ativado';
+    })();
+  </script>
+</body>
+
+</html>
