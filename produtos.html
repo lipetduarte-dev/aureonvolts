@@ -1,0 +1,1735 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Produtos — Aureon Volts</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Exo+2:wght@300;400;500;600;700&family=Share+Tech+Mono&display=swap');
+
+    /* ═══════════════════════════════════════════
+       TOKENS — identical to index.html
+    ═══════════════════════════════════════════ */
+    :root {
+      --electric: #00CFFF;
+      --electric-dim: #0099CC;
+      --gold: #F0A500;
+      --gold-dim: #B87A00;
+      --navy: #050D1A;
+      --navy-mid: #0A1829;
+      --navy-light: #0F2240;
+      --white: #FFFFFF;
+      --gray: #8FA8C8;
+      --green: #00FF99;
+      --red: #FF4D6A;
+      --glow-blue: 0 0 20px rgba(0, 207, 255, 0.5), 0 0 60px rgba(0, 207, 255, 0.2);
+      --glow-gold: 0 0 20px rgba(240, 165, 0, 0.5), 0 0 60px rgba(240, 165, 0, 0.2);
+      --glow-green: 0 0 20px rgba(0, 255, 153, 0.4);
+    }
+
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: 'Exo 2', sans-serif;
+      background: var(--navy);
+      color: var(--white);
+      overflow-x: hidden;
+    }
+
+    /* ═══ CANVAS ═══ */
+    #particles-canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 0;
+      opacity: 0.45;
+    }
+
+    /* ═══ NAV ═══ */
+    nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 200;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 5%;
+      height: 70px;
+      background: rgba(5, 13, 26, 0.88);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(0, 207, 255, 0.15);
+    }
+
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+      position: relative;
+      z-index: 201;
+    }
+
+    .nav-logo img {
+      width: 46px;
+      height: 46px;
+      object-fit: cover;
+      border-radius: 50%;
+      border: 2px solid rgba(0, 207, 255, 0.6);
+      box-shadow: 0 0 15px rgba(0, 207, 255, 0.35);
+      transition: all 0.3s ease;
+      animation: logoPulse 3s infinite;
+    }
+
+    .nav-logo img:hover {
+      transform: scale(1.08);
+      box-shadow:
+        0 0 18px rgba(0, 207, 255, 0.6),
+        0 0 40px rgba(0, 207, 255, 0.25),
+        0 0 70px rgba(240, 165, 0, 0.15);
+      border-color: var(--gold);
+    }
+
+    .nav-brand {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 1.4rem;
+      font-weight: 700;
+      letter-spacing: 3px;
+      background: linear-gradient(135deg, #fff 40%, var(--gold));
+      background-clip: text;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-transform: uppercase;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 36px;
+      list-style: none;
+    }
+
+    .nav-links a {
+      color: var(--gray);
+      text-decoration: none;
+      font-size: 0.85rem;
+      font-weight: 500;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      transition: all 0.3s;
+      position: relative;
+    }
+
+    .nav-links a::after {
+      content: '';
+      position: absolute;
+      bottom: -4px;
+      left: 0;
+      right: 100%;
+      height: 1px;
+      background: var(--electric);
+      transition: right 0.3s;
+    }
+
+    .nav-links a:hover {
+      color: var(--electric);
+    }
+
+    .nav-links a:hover::after {
+      right: 0;
+      box-shadow: var(--glow-blue);
+    }
+
+    .nav-links a.active {
+      color: var(--electric);
+    }
+
+    .nav-links a.active::after {
+      right: 0;
+      box-shadow: var(--glow-blue);
+    }
+
+    /* ═══ HAMBURGER ═══ */
+    .nav-hamburger {
+      display: none;
+      flex-direction: column;
+      justify-content: center;
+      gap: 5px;
+      cursor: pointer;
+      width: 32px;
+      height: 32px;
+      position: relative;
+      z-index: 201;
+      pointer-events: auto;
+      background: none;
+      border: none;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .nav-hamburger span {
+      display: block;
+      width: 24px;
+      height: 2px;
+      background: var(--electric);
+      transition: all 0.3s;
+      pointer-events: none;
+    }
+
+    .nav-hamburger.open span:nth-child(1) {
+      transform: translateY(7px) rotate(45deg);
+    }
+
+    .nav-hamburger.open span:nth-child(2) {
+      opacity: 0;
+    }
+
+    .nav-hamburger.open span:nth-child(3) {
+      transform: translateY(-7px) rotate(-45deg);
+    }
+
+    /* ═══ MOBILE MENU OVERLAY ═══ */
+    .nav-mobile-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(5, 13, 26, 0.97);
+      backdrop-filter: blur(6px);
+      z-index: 150;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.35s ease, visibility 0.35s ease;
+      pointer-events: none;
+    }
+
+    .nav-mobile-overlay.open {
+      opacity: 1;
+      visibility: visible;
+      pointer-events: auto;
+    }
+
+    .nav-mobile {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 36px;
+      z-index: 151;
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(-12px);
+      transition: opacity 0.35s ease, transform 0.35s ease, visibility 0.35s ease;
+      pointer-events: none;
+    }
+
+    .nav-mobile.open {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0);
+      pointer-events: auto;
+    }
+
+    .nav-mobile a {
+      color: var(--white);
+      text-decoration: none;
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 1.6rem;
+      font-weight: 700;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      transition: color 0.2s;
+    }
+
+    .nav-mobile a:hover,
+    .nav-mobile a:active {
+      color: var(--electric);
+    }
+
+    .nav-mobile a.active {
+      color: var(--electric);
+    }
+
+    body.menu-open {
+      overflow: hidden;
+    }
+
+    /* ═══ SHARED UTILS ═══ */
+    section {
+      position: relative;
+      z-index: 1;
+    }
+
+    .section-label {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.7rem;
+      letter-spacing: 4px;
+      color: var(--electric);
+      text-transform: uppercase;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .section-label::before,
+    .section-label::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(90deg, var(--electric), transparent);
+    }
+
+    .section-label::after {
+      background: linear-gradient(90deg, transparent, var(--electric));
+    }
+
+    .section-title {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: clamp(1.8rem, 3vw, 2.8rem);
+      font-weight: 700;
+      text-align: center;
+      margin-bottom: 60px;
+    }
+
+    .section-title span {
+      color: var(--electric);
+    }
+
+    .section-title.gold span {
+      color: var(--gold);
+    }
+
+    .btn-primary {
+      padding: 14px 32px;
+      background: linear-gradient(135deg, var(--electric), var(--electric-dim));
+      color: var(--navy);
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 0.9rem;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      border: none;
+      cursor: pointer;
+      clip-path: polygon(12px 0%, 100% 0%, calc(100% - 12px) 100%, 0% 100%);
+      transition: all 0.3s;
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    .btn-primary:hover {
+      background: linear-gradient(135deg, #fff, var(--electric));
+      box-shadow: var(--glow-blue);
+      transform: translateY(-2px);
+    }
+
+    .btn-secondary {
+      padding: 13px 32px;
+      background: transparent;
+      color: var(--gold);
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 0.9rem;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      cursor: pointer;
+      border: 1px solid var(--gold);
+      clip-path: polygon(12px 0%, 100% 0%, calc(100% - 12px) 100%, 0% 100%);
+      transition: all 0.3s;
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    .btn-secondary:hover {
+      background: rgba(240, 165, 0, 0.1);
+      box-shadow: var(--glow-gold);
+      transform: translateY(-2px);
+    }
+
+    .btn-outline {
+      padding: 13px 32px;
+      background: transparent;
+      color: var(--electric);
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 0.9rem;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      cursor: pointer;
+      border: 1px solid rgba(0, 207, 255, 0.4);
+      clip-path: polygon(12px 0%, 100% 0%, calc(100% - 12px) 100%, 0% 100%);
+      transition: all 0.3s;
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    .btn-outline:hover {
+      background: rgba(0, 207, 255, 0.08);
+      box-shadow: var(--glow-blue);
+      transform: translateY(-2px);
+    }
+
+    .reveal {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* ═══════════════════════════════════════════
+       HERO
+    ═══════════════════════════════════════════ */
+    #hero-produtos {
+      position: relative;
+      min-height: 50vh;
+      display: flex;
+      align-items: center;
+      padding: 120px 5% 70px;
+      overflow: hidden;
+      z-index: 1;
+    }
+
+    .hero-grid-bg {
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(0, 207, 255, 0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 207, 255, 0.04) 1px, transparent 1px);
+      background-size: 60px 60px;
+      mask-image: radial-gradient(ellipse 90% 80% at 50% 50%, black 20%, transparent 100%);
+    }
+
+    .hero-produtos-inner {
+      max-width: 900px;
+      margin: 0 auto;
+      text-align: center;
+      position: relative;
+      z-index: 2;
+    }
+
+    .hero-eyebrow {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.72rem;
+      letter-spacing: 4px;
+      color: var(--electric);
+      text-transform: uppercase;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .hero-eyebrow::before,
+    .hero-eyebrow::after {
+      content: '';
+      display: block;
+      width: 40px;
+      height: 1px;
+      background: var(--electric);
+      box-shadow: var(--glow-blue);
+    }
+
+    .hero-produtos-title {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: clamp(2.6rem, 6vw, 5rem);
+      font-weight: 700;
+      line-height: 1;
+      margin-bottom: 24px;
+    }
+
+    .hero-produtos-title .word-gold {
+      color: var(--gold);
+    }
+
+    .hero-produtos-title .word-electric {
+      color: var(--electric);
+      text-shadow: 0 0 40px rgba(0, 207, 255, 0.35);
+    }
+
+    .hero-produtos-sub {
+      font-size: 1.05rem;
+      color: var(--gray);
+      line-height: 1.7;
+      margin-bottom: 12px;
+    }
+
+    .hero-produtos-desc {
+      font-size: 0.88rem;
+      color: rgba(143, 168, 200, 0.65);
+      line-height: 1.9;
+      margin-bottom: 40px;
+    }
+
+    .hero-circuit-line {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0;
+      margin-top: 40px;
+      opacity: 0.5;
+    }
+
+    .hcl-seg {
+      height: 1px;
+      background: var(--electric);
+    }
+
+    .hcl-node {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--electric);
+      box-shadow: 0 0 8px var(--electric);
+      flex-shrink: 0;
+    }
+
+    .hcl-node.gold {
+      background: var(--gold);
+      box-shadow: 0 0 8px var(--gold);
+    }
+
+    /* ═══════════════════════════════════════════
+       VITRINE — CATÁLOGO DE PRODUTOS
+    ═══════════════════════════════════════════ */
+    #catalogo {
+      padding: 40px 5% 110px;
+      background: linear-gradient(180deg, var(--navy) 0%, var(--navy-mid) 100%);
+    }
+
+    .catalogo-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 28px;
+      max-width: 1400px;
+      margin: 0 auto;
+      align-items: stretch;
+    }
+
+    .produto-card {
+      background: rgba(10, 24, 41, 0.75);
+      border: 1px solid rgba(0, 207, 255, 0.15);
+      clip-path: polygon(0 0, calc(100% - 18px) 0, 100% 18px, 100% 100%, 18px 100%, 0 calc(100% - 18px));
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      transition: all 0.35s;
+    }
+
+    .produto-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--electric), var(--gold), transparent);
+      opacity: 0.7;
+    }
+
+    .produto-card:hover {
+      transform: translateY(-6px);
+      border-color: rgba(0, 207, 255, 0.4);
+      box-shadow: 0 18px 50px rgba(0, 207, 255, 0.12);
+    }
+
+    .card-media {
+      position: relative;
+      height: 200px;
+      background:
+        radial-gradient(circle at 50% 30%, rgba(0, 207, 255, 0.12), transparent 70%),
+        var(--navy-light);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      border-bottom: 1px solid rgba(0, 207, 255, 0.12);
+    }
+
+    .card-media img {
+      width: 120px;
+      height: 120px;
+      object-fit: contain;
+      filter: drop-shadow(0 0 24px rgba(0, 207, 255, 0.35));
+      animation: float 5s ease-in-out infinite;
+    }
+
+    .card-media-icon {
+      font-size: 3rem;
+      opacity: 0.3;
+    }
+
+    .card-badge {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      font-family: 'Rajdhani', sans-serif;
+      font-weight: 800;
+      font-size: 0.68rem;
+      letter-spacing: 2px;
+      padding: 5px 12px;
+      clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%);
+    }
+
+    .card-badge.lancamento {
+      background: linear-gradient(135deg, #ff3b00, #ffb300, #ff6a00);
+      color: #0a0a0a;
+      animation: firePulse 1.2s infinite ease-in-out;
+    }
+
+    .card-badge.embreve {
+      background: rgba(143, 168, 200, 0.18);
+      color: var(--gray);
+      border: 1px solid rgba(143, 168, 200, 0.3);
+    }
+
+    .card-body {
+      padding: 22px 22px 26px;
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+    }
+
+    .card-cat {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.62rem;
+      color: var(--electric);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    .card-title {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin-bottom: 10px;
+      color: var(--white);
+    }
+
+    .card-desc {
+      font-size: 0.85rem;
+      color: var(--gray);
+      line-height: 1.65;
+      margin-bottom: 18px;
+      flex: 1;
+    }
+
+    .card-price-row {
+      margin-bottom: 18px;
+    }
+
+    .card-price-original {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.72rem;
+      color: rgba(143, 168, 200, 0.5);
+      text-decoration: line-through;
+      margin-bottom: 2px;
+    }
+
+    .card-price {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: var(--green);
+      line-height: 1;
+      text-shadow: 0 0 20px rgba(0, 255, 153, 0.35);
+    }
+
+    .card-price sup {
+      font-size: 1rem;
+      vertical-align: super;
+    }
+
+    .card-price .cents {
+      font-size: 1.1rem;
+    }
+
+    .card-price-label {
+      font-size: 0.72rem;
+      color: var(--gray);
+      margin-top: 4px;
+    }
+
+    .card-btn {
+      width: 100%;
+      text-align: center;
+      padding: 13px 20px;
+      background: linear-gradient(135deg, var(--electric), var(--electric-dim));
+      color: var(--navy);
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 0.85rem;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      border: none;
+      cursor: pointer;
+      clip-path: polygon(10px 0%, 100% 0%, calc(100% - 10px) 100%, 0% 100%);
+      transition: all 0.3s;
+      text-decoration: none;
+      display: block;
+    }
+
+    .card-btn:hover {
+      background: linear-gradient(135deg, #fff, var(--electric));
+      box-shadow: var(--glow-blue);
+      transform: translateY(-2px);
+    }
+
+    /* ═══ EM BREVE CARDS ═══ */
+    .produto-card.em-breve {
+      opacity: 0.85;
+    }
+
+    .produto-card.em-breve .card-media {
+      background: var(--navy-light);
+    }
+
+    .produto-card.em-breve .card-media-icon {
+      opacity: 0.25;
+    }
+
+    .produto-card.em-breve .card-title {
+      color: rgba(255, 255, 255, 0.55);
+    }
+
+    .produto-card.em-breve .card-desc {
+      color: rgba(143, 168, 200, 0.55);
+    }
+
+    .card-btn.disabled {
+      background: transparent;
+      color: var(--gray);
+      border: 1px solid rgba(143, 168, 200, 0.3);
+      cursor: pointer;
+    }
+
+    .card-btn.disabled:hover {
+      background: rgba(143, 168, 200, 0.08);
+      box-shadow: none;
+      border-color: rgba(143, 168, 200, 0.5);
+      transform: none;
+    }
+
+    .proximo-bar {
+      margin-top: 14px;
+      height: 2px;
+      background: rgba(255, 255, 255, 0.06);
+      border-radius: 1px;
+      overflow: hidden;
+    }
+
+    .proximo-bar-fill {
+      height: 100%;
+      background: var(--gold);
+      opacity: 0.45;
+    }
+
+    /* ═══ DEV TOAST (mensagem "em desenvolvimento") ═══ */
+    .dev-toast {
+      position: fixed;
+      bottom: 36px;
+      left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      background: rgba(10, 24, 41, 0.95);
+      border: 1px solid var(--gold);
+      box-shadow: var(--glow-gold);
+      color: var(--white);
+      font-family: 'Rajdhani', sans-serif;
+      font-weight: 600;
+      letter-spacing: 1px;
+      padding: 14px 28px;
+      clip-path: polygon(10px 0%, 100% 0%, calc(100% - 10px) 100%, 0% 100%);
+      z-index: 300;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.3s ease, transform 0.3s ease, visibility 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-align: center;
+      max-width: 90vw;
+    }
+
+    .dev-toast.show {
+      opacity: 1;
+      visibility: visible;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    .dev-toast .toast-icon {
+      font-size: 1.1rem;
+      animation: spinTool 2s linear infinite;
+      flex-shrink: 0;
+    }
+
+    @keyframes spinTool {
+      from {
+        transform: rotate(0deg);
+      }
+
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    /* ═══ FINAL CTA ═══ */
+    #final-cta {
+      padding: 120px 5%;
+      text-align: center;
+      background: var(--navy-mid);
+      position: relative;
+      overflow: hidden;
+    }
+
+    #final-cta::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 700px;
+      height: 700px;
+      border-radius: 50%;
+      background: radial-gradient(ellipse, rgba(0, 207, 255, 0.06) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .final-inner {
+      position: relative;
+      z-index: 2;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .final-title {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: clamp(2rem, 3.5vw, 3.2rem);
+      font-weight: 700;
+      margin-bottom: 20px;
+      line-height: 1.2;
+    }
+
+    .final-title span {
+      color: var(--electric);
+    }
+
+    .final-text {
+      font-size: 1rem;
+      color: var(--gray);
+      line-height: 1.8;
+      margin-bottom: 48px;
+    }
+
+    /* ═══ FOOTER ═══ */
+    footer {
+      background: rgba(5, 13, 26, 0.95);
+      border-top: 1px solid rgba(0, 207, 255, 0.1);
+      padding: 60px 5% 30px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .footer-top {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr 1fr;
+      gap: 60px;
+      margin-bottom: 48px;
+    }
+
+    .footer-brand .nav-logo {
+      margin-bottom: 16px;
+    }
+
+    .footer-brand p {
+      font-size: 0.82rem;
+      color: var(--gray);
+      line-height: 1.8;
+      max-width: 300px;
+    }
+
+    .footer-slogan {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.7rem;
+      letter-spacing: 2px;
+      color: var(--electric);
+      margin-top: 16px;
+      opacity: 0.8;
+    }
+
+    .footer-col h4 {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 0.85rem;
+      font-weight: 700;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--white);
+      margin-bottom: 20px;
+      border-bottom: 1px solid rgba(0, 207, 255, 0.15);
+      padding-bottom: 10px;
+    }
+
+    .footer-col ul {
+      list-style: none;
+    }
+
+    .footer-col li {
+      margin-bottom: 10px;
+    }
+
+    .footer-col a {
+      color: var(--gray);
+      text-decoration: none;
+      font-size: 0.83rem;
+      transition: color 0.2s;
+    }
+
+    .footer-col a:hover {
+      color: var(--electric);
+    }
+
+    .social-links {
+      display: flex;
+      gap: 12px;
+    }
+
+    .social-link {
+      width: 36px;
+      height: 36px;
+      border: 1px solid rgba(0, 207, 255, 0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--gray);
+      text-decoration: none;
+      font-size: 0.85rem;
+      transition: all 0.3s;
+    }
+
+    .social-link:hover {
+      border-color: var(--electric);
+      color: var(--electric);
+      box-shadow: var(--glow-blue);
+    }
+
+    .footer-bottom {
+      border-top: 1px solid rgba(0, 207, 255, 0.08);
+      padding-top: 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .footer-bottom p {
+      font-size: 0.75rem;
+      color: rgba(143, 168, 200, 0.5);
+      font-family: 'Share Tech Mono', monospace;
+    }
+
+    /* ═══ ANIMATIONS ═══ */
+    @keyframes blink {
+
+      0%,
+      100% {
+        opacity: 1;
+      }
+
+      50% {
+        opacity: 0.2;
+      }
+    }
+
+    @keyframes logoPulse {
+      0% {
+        box-shadow: 0 0 10px rgba(0, 207, 255, 0.3);
+      }
+
+      50% {
+        box-shadow: 0 0 22px rgba(0, 207, 255, 0.6);
+      }
+
+      100% {
+        box-shadow: 0 0 10px rgba(0, 207, 255, 0.3);
+      }
+    }
+
+    @keyframes float {
+
+      0%,
+      100% {
+        transform: translateY(0);
+      }
+
+      50% {
+        transform: translateY(-8px);
+      }
+    }
+
+    @keyframes firePulse {
+      0% {
+        transform: scale(1);
+        filter: brightness(1);
+        box-shadow: 0 0 10px rgba(255, 90, 0, 0.4);
+      }
+
+      50% {
+        transform: scale(1.08);
+        filter: brightness(1.5) saturate(1.7);
+        box-shadow:
+          0 0 22px rgba(255, 80, 0, 0.75),
+          0 0 50px rgba(0, 207, 255, 0.2);
+      }
+
+      100% {
+        transform: scale(1);
+        filter: brightness(1);
+        box-shadow: 0 0 12px rgba(255, 120, 0, 0.5);
+      }
+    }
+
+    /* ═══ RESPONSIVE ═══ */
+    @media (max-width: 1100px) {
+      .catalogo-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 1024px) {
+      .footer-top {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .nav-links {
+        display: none;
+      }
+
+      .nav-logo img {
+        width: 38px;
+        height: 38px;
+      }
+
+      .nav-hamburger {
+        display: flex;
+      }
+
+      .hero-produtos-title {
+        font-size: 2.6rem;
+      }
+
+      .footer-top {
+        grid-template-columns: 1fr;
+        gap: 32px;
+      }
+    }
+
+    @media (max-width: 560px) {
+      .catalogo-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  
+    /* === AUREON MOBILE + THEME FIXES === */
+    .theme-toggle {
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      min-height: 36px;
+      padding: 7px 12px;
+      border: 1px solid rgba(0, 207, 255, 0.25);
+      background: rgba(0, 207, 255, 0.05);
+      color: var(--white);
+      font-family: 'Rajdhani', sans-serif;
+      font-weight: 700;
+      letter-spacing: 1.4px;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%);
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .theme-toggle:hover {
+      border-color: var(--electric);
+      background: rgba(0, 207, 255, 0.1);
+      box-shadow: 0 0 18px rgba(0, 207, 255, 0.18);
+    }
+
+    .theme-icon {
+      color: var(--gold);
+      font-size: 1rem;
+      line-height: 1;
+    }
+
+    .theme-copy {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      line-height: 1;
+      gap: 3px;
+    }
+
+    .theme-copy span {
+      font-size: 0.66rem;
+      color: var(--gray);
+    }
+
+    .theme-copy strong {
+      font-size: 0.72rem;
+      color: var(--electric);
+    }
+
+    .mobile-theme-toggle {
+      margin-top: 6px;
+      min-width: 210px;
+      justify-content: center;
+    }
+
+    body.light-theme {
+      --navy: #F4F8FC;
+      --navy-mid: #FFFFFF;
+      --navy-light: #E7F0FA;
+      --white: #071321;
+      --gray: #415B78;
+      --glow-blue: 0 0 18px rgba(0, 153, 204, 0.2), 0 0 44px rgba(0, 153, 204, 0.1);
+      --glow-gold: 0 0 18px rgba(184, 122, 0, 0.22), 0 0 44px rgba(184, 122, 0, 0.1);
+      background: var(--navy);
+      color: var(--white);
+    }
+
+    body.light-theme nav,
+    body.light-theme footer {
+      background: rgba(255, 255, 255, 0.92);
+      border-color: rgba(0, 153, 204, 0.22);
+    }
+
+    body.light-theme .nav-mobile,
+    body.light-theme .nav-mobile-overlay.open {
+      background: rgba(244, 248, 252, 0.98);
+    }
+
+    body.light-theme .nav-brand {
+      background: linear-gradient(135deg, #071321 38%, var(--gold));
+      background-clip: text;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    body.light-theme .card,
+    body.light-theme .produto-card,
+    body.light-theme .canal-card,
+    body.light-theme .form-container,
+    body.light-theme .rede-item,
+    body.light-theme .indicator,
+    body.light-theme .stat,
+    body.light-theme .beneficio-card,
+    body.light-theme .proximo-card,
+    body.light-theme .launch-card,
+    body.light-theme .dashboard,
+    body.light-theme .dash-card,
+    body.light-theme .demo-container,
+    body.light-theme .demo-metric,
+    body.light-theme .demo-chart-box,
+    body.light-theme .alert-item {
+      background: rgba(255, 255, 255, 0.82);
+      border-color: rgba(0, 153, 204, 0.18);
+    }
+
+    body.light-theme .hero-grid-bg,
+    body.light-theme .tech-grid {
+      opacity: 0.7;
+    }
+
+    body.light-theme #particles-canvas,
+    body.light-theme #bgCanvas {
+      opacity: 0.22;
+    }
+
+    body.light-theme .btn-primary,
+    body.light-theme .card-btn,
+    body.light-theme .launch-btn,
+    body.light-theme .btn-submit {
+      color: #04101c;
+    }
+
+    body.light-theme .theme-toggle[aria-pressed='true'] {
+      background: rgba(240, 165, 0, 0.12);
+      border-color: rgba(240, 165, 0, 0.5);
+    }
+
+    nav .nav-hamburger,
+    nav .nav-hbg {
+      position: relative;
+      z-index: 310;
+      width: 34px;
+      height: 34px;
+      align-items: center;
+      justify-content: center;
+      border: 0;
+      background: transparent;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .nav-hamburger.open span:nth-child(1),
+    .nav-hbg.open span:nth-child(1) {
+      transform: translateY(7px) rotate(45deg);
+    }
+
+    .nav-hamburger.open span:nth-child(2),
+    .nav-hbg.open span:nth-child(2) {
+      opacity: 0;
+    }
+
+    .nav-hamburger.open span:nth-child(3),
+    .nav-hbg.open span:nth-child(3) {
+      transform: translateY(-7px) rotate(-45deg);
+    }
+
+    .nav-mobile {
+      z-index: 260;
+    }
+
+    body.menu-open {
+      overflow: hidden;
+    }
+
+    .card-media {
+      min-height: 190px;
+    }
+
+    .card-badge {
+      max-width: calc(100% - 24px);
+      white-space: nowrap;
+      z-index: 3;
+      transform-origin: top right;
+    }
+
+    .demo-super-title {
+      display: block;
+      max-width: min(900px, calc(100vw - 32px));
+      margin-left: auto;
+      margin-right: auto;
+      overflow-wrap: anywhere;
+      background-clip: text;
+      -webkit-background-clip: text;
+      color: var(--electric);
+    }
+
+    .boot-sequence {
+      width: min(680px, 100%);
+      margin: 0 auto;
+    }
+
+    .boot-progress {
+      width: 100%;
+      max-width: 680px;
+      margin-left: auto;
+      margin-right: auto;
+      border-radius: 999px;
+      box-shadow: inset 0 0 0 1px rgba(0, 207, 255, 0.14);
+    }
+
+    .boot-fill {
+      max-width: 100%;
+      border-radius: inherit;
+    }
+
+    @media (max-width: 900px) {
+      nav .theme-toggle:not(.mobile-theme-toggle) {
+        display: none;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .nav-mobile {
+        padding: 24px;
+      }
+
+      .nav-mobile.open {
+        display: flex;
+      }
+
+      .nav-mobile a {
+        text-align: center;
+      }
+
+      .card-media {
+        height: 180px;
+        min-height: 180px;
+        padding-top: 30px;
+      }
+
+      .card-badge {
+        top: 10px;
+        right: 10px;
+        font-size: 0.62rem;
+        letter-spacing: 1px;
+        padding: 4px 10px;
+      }
+
+      .card-badge.lancamento {
+        animation-name: firePulseCompact;
+      }
+
+      .demo-super-title {
+        font-size: clamp(1.35rem, 8vw, 2.2rem);
+        letter-spacing: 2px;
+        line-height: 1.1;
+        padding: 0 6px;
+      }
+
+      .demo-super-sub {
+        padding: 0 10px;
+        font-size: 0.92rem;
+      }
+
+      .boot-line {
+        font-size: 0.72rem;
+        letter-spacing: 1.4px;
+        line-height: 1.5;
+      }
+
+      .boot-progress {
+        height: 7px;
+      }
+    }
+
+    @keyframes firePulseCompact {
+      0%, 100% {
+        transform: scale(1);
+        filter: brightness(1);
+        box-shadow: 0 0 10px rgba(255, 90, 0, 0.38);
+      }
+
+      50% {
+        transform: scale(1.025);
+        filter: brightness(1.25) saturate(1.35);
+        box-shadow: 0 0 18px rgba(255, 80, 0, 0.55);
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <canvas id="particles-canvas"></canvas>
+
+  <!-- ══════════ NAV ══════════ -->
+  <nav>
+    <a href="index.html" class="nav-logo">
+      <img src="https://i.ibb.co/Csp9CF32/imagem-2026-06-16-161133298.png" alt="Aureon Volts">
+      <span class="nav-brand">Aureon Volts</span>
+    </a>
+    <ul class="nav-links">
+      <li><a href="index.html">Início</a></li>
+      <li><a href="produtos.html" class="active">Produtos</a></li>
+      <li><a href="solucoes.html">Soluções</a></li>
+      <li><a href="empresa.html">Empresa</a></li>
+      <li><a href="contato.html">Contato</a></li>
+    </ul>
+        <button class="theme-toggle" type="button" data-theme-toggle aria-pressed="false" aria-label="Ativar tema claro">
+      <span class="theme-icon">☀</span>
+      <span class="theme-copy"><span>Tema claro</span><strong class="theme-state">Desativado</strong></span>
+    </button>
+    <button class="nav-hamburger" id="burger" aria-label="Abrir menu" aria-expanded="false" type="button">
+      <span></span><span></span><span></span>
+    </button>
+  </nav>
+
+  <div class="nav-mobile-overlay" id="mobileOverlay"></div>
+  <div class="nav-mobile" id="mobileMenu" role="dialog" aria-modal="true">
+    <a href="index.html">Início</a>
+    <a href="produtos.html" class="active">Produtos</a>
+    <a href="solucoes.html">Soluções</a>
+    <a href="empresa.html">Empresa</a>
+    <a href="contato.html">Contato</a>
+    <button class="theme-toggle mobile-theme-toggle" type="button" data-theme-toggle aria-pressed="false" aria-label="Ativar tema claro">
+      <span class="theme-icon">☀</span>
+      <span class="theme-copy"><span>Tema claro</span><strong class="theme-state">Desativado</strong></span>
+    </button>
+  </div>
+
+  <!-- ══════════ HERO ══════════ -->
+  <section id="hero-produtos">
+    <div class="hero-grid-bg"></div>
+    <div class="hero-produtos-inner">
+      <div class="hero-eyebrow reveal">Catálogo Oficial · Aureon Volts</div>
+      <h1 class="hero-produtos-title reveal">
+        Nossos<br>
+        <span class="word-electric">Produtos</span>
+      </h1>
+      <p class="hero-produtos-sub reveal">Soluções inteligentes desenvolvidas para monitorar, proteger e otimizar
+        instalações elétricas.</p>
+      <p class="hero-produtos-desc reveal">A Aureon Volts desenvolve equipamentos capazes de transformar dados
+        elétricos em decisões inteligentes, proporcionando mais segurança, eficiência e controle.</p>
+      <div class="hero-circuit-line reveal">
+        <div class="hcl-seg" style="width:60px"></div>
+        <div class="hcl-node"></div>
+        <div class="hcl-seg" style="width:100px"></div>
+        <div class="hcl-node gold"></div>
+        <div class="hcl-seg" style="width:40px"></div>
+        <div class="hcl-node"></div>
+        <div class="hcl-seg" style="width:120px"></div>
+        <div class="hcl-node gold"></div>
+        <div class="hcl-seg" style="width:60px"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════ VITRINE / CATÁLOGO ══════════ -->
+  <section id="catalogo">
+    <div class="section-label reveal">Vitrine de Produtos</div>
+    <h2 class="section-title reveal">Explore nosso <span>Catálogo</span></h2>
+
+    <div class="catalogo-grid">
+
+      <!-- PRODUTO 01 — VOLTEYE X (disponível) -->
+      <div class="produto-card reveal">
+        <div class="card-media">
+          <span class="card-badge lancamento">🔥 LANÇAMENTO</span>
+          <img src="https://i.ibb.co/Csp9CF32/imagem-2026-06-16-161133298.png" alt="VoltEye X">
+        </div>
+        <div class="card-body">
+          <div class="card-cat">Monitor Inteligente de Energia</div>
+          <h3 class="card-title">VoltEye X</h3>
+          <p class="card-desc">Monitore em tempo real tensão, corrente e potência. Identifique desperdícios, detecte
+            anomalias e aumente a segurança elétrica da sua instalação.</p>
+          <div class="card-price-row">
+            <div class="card-price-original">De R$ 499,90</div>
+            <div class="card-price"><sup>R$</sup>439<span class="cents">,90</span></div>
+            <div class="card-price-label">Economia de R$ 60,00 no lançamento</div>
+          </div>
+          <a href="volteye-info.html" class="card-btn">Ver Produto</a>
+        </div>
+      </div>
+
+      <!-- PRODUTO 02 — EM BREVE -->
+      <div class="produto-card em-breve reveal">
+        <div class="card-media">
+          <span class="card-badge embreve">EM BREVE</span>
+          <span class="card-media-icon">🔒</span>
+        </div>
+        <div class="card-body">
+          <div class="card-cat">Em Desenvolvimento</div>
+          <h3 class="card-title">Produto 02</h3>
+          <p class="card-desc">Um novo produto Aureon Volts em desenvolvimento. Detalhes serão revelados em breve.</p>
+          <div class="proximo-bar">
+            <div class="proximo-bar-fill" style="width:65%"></div>
+          </div>
+          <button class="card-btn disabled" style="margin-top:18px" onclick="showDevToast()">Em Breve</button>
+        </div>
+      </div>
+
+      <!-- PRODUTO 03 — EM BREVE -->
+      <div class="produto-card em-breve reveal">
+        <div class="card-media">
+          <span class="card-badge embreve">EM BREVE</span>
+          <span class="card-media-icon">🔧</span>
+        </div>
+        <div class="card-body">
+          <div class="card-cat">Em Desenvolvimento</div>
+          <h3 class="card-title">Produto 03</h3>
+          <p class="card-desc">Solução avançada em desenvolvimento. A Aureon Volts continua expandindo seu
+            portfólio.</p>
+          <div class="proximo-bar">
+            <div class="proximo-bar-fill" style="width:38%"></div>
+          </div>
+          <button class="card-btn disabled" style="margin-top:18px" onclick="showDevToast()">Em Breve</button>
+        </div>
+      </div>
+
+      <!-- PRODUTO 04 — EM BREVE -->
+      <div class="produto-card em-breve reveal">
+        <div class="card-media">
+          <span class="card-badge embreve">EM BREVE</span>
+          <span class="card-media-icon">⭐</span>
+        </div>
+        <div class="card-body">
+          <div class="card-cat">Novidade Futura</div>
+          <h3 class="card-title">Produto 04</h3>
+          <p class="card-desc">Inovação que vai redefinir o monitoramento inteligente. Fique atento às novidades.</p>
+          <div class="proximo-bar">
+            <div class="proximo-bar-fill" style="width:15%"></div>
+          </div>
+          <button class="card-btn disabled" style="margin-top:18px" onclick="showDevToast()">Em Breve</button>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ══════════ FINAL CTA ══════════ -->
+  <section id="final-cta">
+    <div class="final-inner">
+      <div class="section-label reveal">Próximo Passo</div>
+      <h2 class="final-title reveal">Tecnologia que <span>Protege sua Energia</span></h2>
+      <p class="final-text reveal">A Aureon Volts continua desenvolvendo soluções inovadoras para tornar instalações
+        elétricas mais seguras, inteligentes e eficientes.</p>
+      <div class="reveal">
+        <a href="empresa.html" class="btn-primary">Conheça Nossa Empresa</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════ DEV TOAST ══════════ -->
+  <div class="dev-toast" id="devToast">
+    <span class="toast-icon">⚙️</span>
+    <span>Produto em desenvolvimento.</span>
+  </div>
+
+  <!-- ══════════ FOOTER ══════════ -->
+  <footer>
+    <div class="footer-top">
+      <div class="footer-brand">
+        <a href="index.html" class="nav-logo">
+          <img src="https://i.ibb.co/Csp9CF32/imagem-2026-06-16-161133298.png" alt="Aureon Volts"
+            style="height:50px;width:50px">
+          <span class="nav-brand">Aureon Volts</span>
+        </a>
+        <p>Tecnologia elétrica de próxima geração. Monitoramento inteligente que protege e otimiza suas instalações
+          elétricas.</p>
+        <p class="footer-slogan">MONITORAMENTO • PROTEÇÃO • OTIMIZAÇÃO</p>
+      </div>
+      <div class="footer-col">
+        <h4>Links Rápidos</h4>
+        <ul>
+          <li><a href="index.html">Início</a></li>
+          <li><a href="solucoes.html">Soluções</a></li>
+          <li><a href="produtos.html">Produtos</a></li>
+          <li><a href="empresa.html">Empresa</a></li>
+          <li><a href="contato.html">Contato</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Produtos</h4>
+        <ul>
+          <li><a href="volteye-info.html">VoltEye X</a></li>
+          <li><a href="#catalogo">Produto 02 — Em Breve</a></li>
+          <li><a href="#catalogo">Produto 03 — Em Breve</a></li>
+          <li><a href="#catalogo">Produto 04 — Em Breve</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Redes Sociais</h4>
+        <div class="social-links">
+          <a href="#" class="social-link" title="LinkedIn">in</a>
+          <a href="#" class="social-link" title="Instagram">ig</a>
+          <a href="#" class="social-link" title="YouTube">yt</a>
+          <a href="#" class="social-link" title="Twitter">tw</a>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>© 2026 AUREON VOLTS. TODOS OS DIREITOS RESERVADOS.</p>
+      <p>SISTEMA ONLINE · V2.5.0</p>
+    </div>
+  </footer>
+
+  <script>
+    // ── PARTICLES ──
+    const canvas = document.getElementById('particles-canvas');
+    const ctx = canvas.getContext('2d');
+    let W = canvas.width = window.innerWidth;
+    let H = canvas.height = window.innerHeight;
+    const particles = [];
+    for (let i = 0; i < 60; i++) {
+      particles.push({
+        x: Math.random() * W, y: Math.random() * H,
+        vx: (Math.random() - 0.5) * 0.4, vy: (Math.random() - 0.5) * 0.4,
+        r: Math.random() * 1.5 + 0.5,
+        c: Math.random() > 0.7 ? 'rgba(240,165,0,' : 'rgba(0,207,255,'
+      });
+    }
+    function drawParticles() {
+      ctx.clearRect(0, 0, W, H);
+      particles.forEach(p => {
+        p.x += p.vx; p.y += p.vy;
+        if (p.x < 0) p.x = W; if (p.x > W) p.x = 0;
+        if (p.y < 0) p.y = H; if (p.y > H) p.y = 0;
+        ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        ctx.fillStyle = p.c + '0.6)'; ctx.fill();
+      });
+      for (let i = 0; i < particles.length; i++) {
+        for (let j = i + 1; j < particles.length; j++) {
+          const dx = particles[i].x - particles[j].x;
+          const dy = particles[i].y - particles[j].y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          if (dist < 120) {
+            ctx.beginPath();
+            ctx.strokeStyle = 'rgba(0,207,255,' + (0.06 * (1 - dist / 120)) + ')';
+            ctx.lineWidth = 0.5;
+            ctx.moveTo(particles[i].x, particles[i].y);
+            ctx.lineTo(particles[j].x, particles[j].y);
+            ctx.stroke();
+          }
+        }
+      }
+      requestAnimationFrame(drawParticles);
+    }
+    drawParticles();
+    window.addEventListener('resize', () => { W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight; });
+
+    // ── SCROLL REVEAL ──
+    const reveals = document.querySelectorAll('.reveal');
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((e, i) => {
+        if (e.isIntersecting) setTimeout(() => e.target.classList.add('visible'), i * 70);
+      });
+    }, { threshold: 0.08 });
+    reveals.forEach(r => observer.observe(r));
+
+    // ── MOBILE MENU (hambúrguer) ──
+    (function () {
+      const burger = document.getElementById('burger');
+      const mobileMenu = document.getElementById('mobileMenu');
+      const overlay = document.getElementById('mobileOverlay');
+      const menuLinks = mobileMenu.querySelectorAll('a');
+
+      function openMobile() {
+        burger.classList.add('open');
+        mobileMenu.classList.add('open');
+        overlay.classList.add('open');
+        burger.setAttribute('aria-expanded', 'true');
+        document.body.classList.add('menu-open');
+      }
+
+      function closeMobile() {
+        burger.classList.remove('open');
+        mobileMenu.classList.remove('open');
+        overlay.classList.remove('open');
+        burger.setAttribute('aria-expanded', 'false');
+        document.body.classList.remove('menu-open');
+      }
+
+      function toggleMobile() {
+        if (mobileMenu.classList.contains('open')) {
+          closeMobile();
+        } else {
+          openMobile();
+        }
+      }
+
+      burger.addEventListener('click', toggleMobile);
+      overlay.addEventListener('click', closeMobile);
+      menuLinks.forEach(link => link.addEventListener('click', closeMobile));
+
+      // Fecha automaticamente se a tela voltar para desktop
+      window.addEventListener('resize', () => {
+        if (window.innerWidth > 768 && mobileMenu.classList.contains('open')) {
+          closeMobile();
+        }
+      });
+
+      // Fecha com a tecla ESC
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && mobileMenu.classList.contains('open')) {
+          closeMobile();
+        }
+      });
+    })();
+
+    // ── TOAST "EM DESENVOLVIMENTO" ──
+    let toastTimeout;
+    function showDevToast() {
+      const toast = document.getElementById('devToast');
+      toast.classList.add('show');
+      clearTimeout(toastTimeout);
+      toastTimeout = setTimeout(() => {
+        toast.classList.remove('show');
+      }, 2600);
+    }
+  
+    // === AUREON INTERACTION FIXES ===
+    (function () {
+      const navBurger = document.getElementById('burger');
+      const navMenu = document.getElementById('mobileMenu');
+      const navOverlay = document.getElementById('mobileOverlay');
+
+      function setMenu(open) {
+        if (!navBurger || !navMenu) return;
+        navBurger.classList.toggle('open', open);
+        navMenu.classList.toggle('open', open);
+        if (navOverlay) navOverlay.classList.toggle('open', open);
+        navBurger.setAttribute('aria-expanded', String(open));
+        document.body.classList.toggle('menu-open', open);
+      }
+
+      if (navBurger && navMenu) {
+        navBurger.setAttribute('role', 'button');
+        navBurger.setAttribute('aria-label', 'Abrir menu');
+        navBurger.setAttribute('aria-expanded', 'false');
+        navBurger.addEventListener('click', function (event) {
+          event.preventDefault();
+          event.stopImmediatePropagation();
+          setMenu(!navMenu.classList.contains('open'));
+        }, true);
+        if (navOverlay) navOverlay.addEventListener('click', function () { setMenu(false); });
+        navMenu.querySelectorAll('a').forEach(function (link) {
+          link.addEventListener('click', function () { setMenu(false); });
+        });
+        window.closeMobile = function () { setMenu(false); };
+        window.addEventListener('resize', function () {
+          if (window.innerWidth > 768) setMenu(false);
+        });
+        document.addEventListener('keydown', function (event) {
+          if (event.key === 'Escape') setMenu(false);
+        });
+      }
+
+      const themeButtons = document.querySelectorAll('[data-theme-toggle]');
+      function applyTheme(light) {
+        document.body.classList.toggle('light-theme', light);
+        themeButtons.forEach(function (button) {
+          const state = button.querySelector('.theme-state');
+          const icon = button.querySelector('.theme-icon');
+          button.setAttribute('aria-pressed', String(light));
+          button.setAttribute('aria-label', light ? 'Desativar tema claro' : 'Ativar tema claro');
+          if (state) state.textContent = light ? 'Ativado' : 'Desativado';
+          if (icon) icon.textContent = light ? '◐' : '☀';
+        });
+      }
+
+      let savedTheme = 'dark';
+      try { savedTheme = localStorage.getItem('aureon-theme') || 'dark'; } catch (error) {}
+      applyTheme(savedTheme === 'light');
+      themeButtons.forEach(function (button) {
+        button.addEventListener('click', function () {
+          const next = !document.body.classList.contains('light-theme');
+          try { localStorage.setItem('aureon-theme', next ? 'light' : 'dark'); } catch (error) {}
+          applyTheme(next);
+        });
+      });
+    })();
+  </script>
+</body>
+
+</html>
