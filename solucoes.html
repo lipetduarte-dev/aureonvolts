@@ -1315,6 +1315,98 @@
         box-shadow: 0 0 18px rgba(255, 80, 0, 0.55);
       }
     }
+    /* ===== MOBILE READABILITY + LIGHT THEME REFINEMENTS ===== */
+    html,
+    body {
+      max-width: 100%;
+      overflow-x: hidden;
+    }
+
+    .nav-mobile {
+      max-height: calc(100dvh - 70px);
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .theme-toggle,
+    .btn-primary,
+    .btn-secondary,
+    .card-btn,
+    .launch-btn,
+    .btn-submit,
+    .nav-mobile a {
+      max-width: 100%;
+      min-width: 0;
+      white-space: normal;
+      overflow-wrap: anywhere;
+      line-height: 1.25;
+    }
+
+    body.light-theme {
+      --navy: #F6F8FB;
+      --navy-mid: #FFFFFF;
+      --navy-light: #EAF1F8;
+      --white: #071321;
+      --gray: #334D68;
+      background: #F6F8FB;
+    }
+
+    body.light-theme section {
+      color: #071321;
+    }
+
+    body.light-theme .hero-sub,
+    body.light-theme .hero-desc,
+    body.light-theme .card-text,
+    body.light-theme .solucao-desc,
+    body.light-theme .beneficio-text,
+    body.light-theme footer p,
+    body.light-theme .footer-col a {
+      color: #334D68;
+    }
+
+    body.light-theme .card,
+    body.light-theme .produto-card,
+    body.light-theme .canal-card,
+    body.light-theme .form-container,
+    body.light-theme .rede-item,
+    body.light-theme .indicator,
+    body.light-theme .stat,
+    body.light-theme .beneficio-card,
+    body.light-theme .proximo-card,
+    body.light-theme .launch-card,
+    body.light-theme .dashboard,
+    body.light-theme .dash-card,
+    body.light-theme .demo-container,
+    body.light-theme .demo-metric,
+    body.light-theme .demo-chart-box,
+    body.light-theme .alert-item {
+      background: rgba(255, 255, 255, 0.94);
+      border-color: rgba(0, 111, 159, 0.2);
+      box-shadow: 0 10px 28px rgba(13, 27, 46, 0.08);
+    }
+
+    @media (max-width: 768px) {
+      .btn-primary,
+      .btn-secondary,
+      .card-btn,
+      .launch-btn,
+      .btn-submit {
+        clip-path: none;
+        border-radius: 8px;
+        text-align: center;
+      }
+
+      .hero-btns,
+      .cta-btns {
+        width: 100%;
+      }
+
+      .hero-btns a,
+      .cta-btns a {
+        width: 100%;
+      }
+    }
   </style>
 </head>
 

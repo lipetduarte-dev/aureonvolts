@@ -60,19 +60,22 @@
     }
 
     .light {
-      --bg: #f0f4f8;
+      --bg: #f6f8fb;
       --bg2: #ffffff;
-      --bg3: #e8eef5;
-      --bg4: #dde5ef;
-      --border: rgba(0, 0, 0, 0.08);
-      --border2: rgba(0, 0, 0, 0.14);
-      --text: #0d1b2e;
-      --text2: #4a6080;
-      --text3: #8fa3be;
-      --accent: #0077aa;
-      --accent2: #005588;
-      --accent-glow: rgba(0, 119, 170, 0.1);
-      --shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+      --bg3: #eef3f8;
+      --bg4: #dce7f1;
+      --border: rgba(13, 27, 46, 0.1);
+      --border2: rgba(13, 27, 46, 0.18);
+      --text: #071321;
+      --text2: #334d68;
+      --text3: #647c96;
+      --accent: #006f9f;
+      --accent2: #00577d;
+      --accent-glow: rgba(0, 111, 159, 0.12);
+      --green: #008f4f;
+      --yellow: #8a6400;
+      --red: #c72f38;
+      --shadow: 0 8px 28px rgba(13, 27, 46, 0.12);
     }
 
     html,
@@ -1119,6 +1122,16 @@
       flex-shrink: 0;
     }
 
+    #demo-btn-exit {
+      font-size: 0;
+    }
+
+    #demo-btn-exit::after {
+      content: 'Sair da demo';
+      font-size: 11px;
+      line-height: 1.1;
+    }
+
     /* Hamburger (mobile) */
     #demo-hamburger {
       display: none;
@@ -1390,6 +1403,203 @@
       color: var(--accent);
       flex-shrink: 0;
     }
+
+    /* ===== MOBILE/DEMO STABILITY OVERRIDES ===== */
+    html,
+    body {
+      min-height: 100%;
+      height: auto;
+      overflow-x: hidden;
+      overflow-y: auto;
+    }
+
+    body.demo-menu-open {
+      overflow-y: auto;
+    }
+
+    #demo-mode-banner,
+    #demo-navbar {
+      position: relative;
+      top: auto;
+      z-index: 50;
+    }
+
+    #demo-navbar {
+      height: 52px;
+    }
+
+    .demo-nav-links,
+    .demo-nav-sep,
+    #demo-btn-back,
+    #demo-float-back {
+      display: none !important;
+    }
+
+    #demo-btn-exit {
+      margin-left: auto;
+      max-width: min(260px, 48vw);
+      min-width: 0;
+    }
+
+    #demo-mobile-menu {
+      position: absolute;
+      top: 80px;
+      max-height: calc(100dvh - 80px);
+      overflow-y: auto;
+      overscroll-behavior: contain;
+    }
+
+    #app {
+      height: auto !important;
+      min-height: calc(100dvh - 80px) !important;
+      padding-top: 0 !important;
+      overflow: visible;
+    }
+
+    .screen {
+      min-height: calc(100dvh - 80px);
+      overflow: visible;
+    }
+
+    .screen.active {
+      position: relative;
+    }
+
+    .scroll-body,
+    .home-nav {
+      overflow-y: visible;
+    }
+
+    .btn,
+    .nav-btn,
+    .setting-row,
+    .detail-row,
+    .circuit-item,
+    .alert-item,
+    .demo-mobile-link,
+    #demo-btn-exit {
+      min-width: 0;
+    }
+
+    .header-title,
+    .header-sub,
+    .nav-title,
+    .nav-desc,
+    .metric-label,
+    .metric-value,
+    .setting-label,
+    .setting-sub,
+    .detail-row-label,
+    .detail-row-value,
+    .alert-title,
+    .alert-desc,
+    .circuit-name,
+    .circuit-stats,
+    .circuit-power,
+    .demo-mobile-link,
+    #demo-btn-exit {
+      overflow-wrap: anywhere;
+    }
+
+    .light .card,
+    .light .metric-card,
+    .light .metric-card-sm,
+    .light .circuit-item,
+    .light .alert-item,
+    .light .modal-sheet {
+      box-shadow: 0 8px 24px rgba(13, 27, 46, 0.08);
+    }
+
+    .light .btn-primary,
+    .light .tab-btn.active {
+      color: #ffffff;
+    }
+
+    @media (max-width: 768px) {
+      #demo-navbar {
+        padding: 0 14px;
+      }
+
+      #demo-btn-exit {
+        display: flex;
+        max-width: 136px;
+        padding: 7px 10px;
+        font-size: 0;
+        letter-spacing: 1px;
+      }
+
+      #demo-btn-exit::after {
+        font-size: 10px;
+      }
+
+      #demo-hamburger {
+        display: none !important;
+      }
+
+      #demo-mobile-menu {
+        display: none !important;
+        padding: 12px 14px 16px;
+      }
+
+      #demo-mobile-menu .back-link,
+      #demo-mobile-menu .exit-link,
+      #demo-mobile-menu .demo-mobile-sep:first-of-type {
+        display: none;
+      }
+
+      .demo-nav-brand {
+        max-width: calc(100vw - 96px);
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .home-header {
+        padding: 28px 16px 18px;
+      }
+
+      .home-nav,
+      .scroll-body {
+        padding-left: 14px;
+        padding-right: 14px;
+      }
+
+      .metric-grid,
+      .metric-grid-3 {
+        grid-template-columns: 1fr;
+      }
+
+      .circuit-item,
+      .setting-row,
+      .detail-row {
+        align-items: flex-start;
+      }
+
+      .circuit-item {
+        flex-wrap: wrap;
+      }
+
+      .circuit-right {
+        width: 100%;
+        align-items: flex-start;
+        padding-left: 56px;
+      }
+
+      .setting-row,
+      .detail-row {
+        flex-direction: column;
+      }
+
+      .setting-input {
+        width: 100%;
+        text-align: left;
+      }
+
+      .toast {
+        max-width: calc(100vw - 28px);
+        white-space: normal;
+        text-align: center;
+      }
+    }
   </style>
 </head>
 
@@ -1410,10 +1620,10 @@
   <nav id="demo-navbar">
 
     <!-- Logo -->
-    <a href="index.html" class="demo-nav-logo" title="Voltar ao site Aureon Volts">
+    <div class="demo-nav-logo" title="Aureon Volts">
       <img src="https://i.ibb.co/FkwXsfLT/image.png" alt="Aureon Volts">
       <span class="demo-nav-brand">Aureon&nbsp;Volts</span>
-    </a>
+    </div>
 
     <div class="demo-nav-sep"></div>
 
@@ -2511,7 +2721,7 @@
         if (destination === 'produtos') {
           window.location.href = 'produtos.html';
         } else {
-          window.location.href = 'https://aureonvolts.com';
+          window.location.href = 'index.html';
         }
       }, 600);
     }
@@ -2522,15 +2732,16 @@
       const burger = document.getElementById('demo-hamburger');
       const isOpen = menu.classList.toggle('open');
       burger.classList.toggle('open', isOpen);
-      // Prevent body scroll while menu is open
-      document.body.style.overflow = isOpen ? 'hidden' : '';
+      burger.setAttribute('aria-expanded', String(isOpen));
+      document.body.classList.toggle('demo-menu-open', isOpen);
     }
 
     /** Close mobile menu */
     function closeDemoMenu() {
       document.getElementById('demo-mobile-menu').classList.remove('open');
       document.getElementById('demo-hamburger').classList.remove('open');
-      document.body.style.overflow = '';
+      document.getElementById('demo-hamburger').setAttribute('aria-expanded', 'false');
+      document.body.classList.remove('demo-menu-open');
     }
 
     // Close mobile menu when clicking outside
